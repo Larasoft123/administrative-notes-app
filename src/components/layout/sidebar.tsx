@@ -16,7 +16,8 @@ import {
   HelpCircle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useState } from "react"
+import { usePathname } from "next/navigation"
+import Link from "next/link"
 
 const navigation = [
   {
@@ -32,9 +33,9 @@ const navigation = [
     current: false,
   },
   {
-    name: "Usuarios",
+    name: "estudiantes",
     icon: Users,
-    href: "#",
+    href: "/estudiantes",
     current: false,
   },
   {
@@ -83,11 +84,11 @@ const secondaryNavigation = [
 ]
 
 export function Sidebar() {
-  const [currentItem, setCurrentItem] = useState("Dashboard")
+  const pathName = usePathname()
 
   return (
     <div className="flex h-full flex-col bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800">
-   
+
       {/* Navigation */}
       <ScrollArea className="flex-1 px-3 py-4">
         <div className="space-y-1">
@@ -96,10 +97,10 @@ export function Sidebar() {
             <div className="space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon
-                const isActive = currentItem === item.name
+                const isActive = pathName === item.href
                 return (
+                  <Link key={item.name} href={item.href}>
                   <Button
-                    key={item.name}
                     variant={isActive ? "secondary" : "ghost"}
                     className={cn(
                       "w-full justify-start h-10",
@@ -107,11 +108,12 @@ export function Sidebar() {
                         ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300"
                         : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800",
                     )}
-                    onClick={() => setCurrentItem(item.name)}
+                   
                   >
                     <Icon className="mr-3 h-4 w-4" />
                     {item.name}
                   </Button>
+                  </Link>
                 )
               })}
             </div>
@@ -125,14 +127,18 @@ export function Sidebar() {
               {secondaryNavigation.map((item) => {
                 const Icon = item.icon
                 return (
-                  <Button
-                    key={item.name}
-                    variant="ghost"
-                    className="w-full justify-start h-10 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  >
-                    <Icon className="mr-3 h-4 w-4" />
-                    {item.name}
-                  </Button>
+                  <Link key={item.name} href={item.href}>
+                    <Button
+
+                      variant="ghost"
+                      className="w-full cursor-pointer justify-start h-10 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >
+
+                      <Icon className="mr-3 h-4 w-4" />
+                      {item.name}
+
+                    </Button>
+                  </Link>
                 )
               })}
             </div>
