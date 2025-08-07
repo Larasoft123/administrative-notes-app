@@ -17,7 +17,7 @@ interface SubjectCardProps {
 
 
 export function SubjectCard({ name, sections, totalStudents, avgGrade, }: SubjectCardProps) {
-  console.log(sections);
+ 
 
   return (
     <Card className="border border-gray-200 dark:border-gray-700">
