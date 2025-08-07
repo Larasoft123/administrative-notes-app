@@ -1,10 +1,33 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { sql } from "@/lib/db";
 
+interface StudentFormData {
+  cedula?: string | null;
+  nombre: string;
+  apellido: string;
+  fecha_nacimiento: Date;
+  direccion?: string | null;
+}
+
 export async function GET(request: NextRequest) {
   const students = await Students.getStudentsInfo();
 
   return NextResponse.json(students);
+}
+
+export async function POST(request: NextRequest) {
+  let {apellido,fecha_nacimiento,nombre,cedula = null,direccion = null} = (await request.json()) as StudentFormData; 
+
+  cedula == '' ? cedula = null : null;
+  direccion == '' ? direccion = null : null;
+
+  try {
+    const student = await Students.createStudent({apellido,fecha_nacimiento,nombre,cedula,direccion });
+
+    return NextResponse.json({ student });
+  } catch (error) {
+    return NextResponse.json({ error: "Error al crear el estudiante" }, { status: 500 });
+  }
 }
 
 class Students {
@@ -80,6 +103,27 @@ ORDER BY
     } catch (error) {
       console.log(error);
       throw new Error("Error al obtener los estudiantes");
+    }
+  }
+
+  static async createStudent({
+    apellido,
+    fecha_nacimiento,
+    nombre,
+    cedula,
+    direccion,
+  }: StudentFormData) {
+    try {
+      const student = await sql.query(
+        "INSERT INTO estudiantes(cedula,nombres, apellidos,fecha_nacimiento,direccion) VALUES($1,$2,$3,$4,$5)",
+        [cedula, nombre, apellido, fecha_nacimiento, direccion]
+      );
+      
+
+      return student;
+    } catch (error) {
+      console.log(error);
+      throw new Error("Error al crear el estudiante");
     }
   }
 }
