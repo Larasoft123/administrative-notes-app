@@ -32,7 +32,7 @@ export function StatCard({
       </CardHeader>
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
-        <div className={`flex items-center text-xs ${trendColors[trend]}`}>
+        <div className={`flex items-center mt-2 text-xs ${trendColors[trend]}`}>
           <DescIcon className="h-3 w-3 mr-1" />
           {description}
         </div>
