@@ -2,22 +2,43 @@ import { Users, GraduationCap, BookOpen, Award, TrendingUp, BarChart3, } from "l
 import { StatCard } from "@/components/dashboard/stat-card"
 import { sql } from "@/lib/db"
 
-export async function StatsCards({}) {
-  const [{total}] = await sql`SELECT count(cedula) as total FROM estudiantes`
+export async function StatsCards({materias,promedio}: {materias: string[], promedio: number}) {
 
+  const [{total_estudiantes_impartidos, total_materias_impartidas}] = await sql`SELECT
+    COUNT(DISTINCT e.id_estudiante) AS total_estudiantes_impartidos,
+    COUNT(DISTINCT m.id_materia) AS total_materias_impartidas
+FROM
+    docentes d
+JOIN
+    cursos c ON d.id_docente = c.id_docente
+JOIN
+    materias m ON c.id_materia = m.id_materia
+JOIN
+    periodos_escolares pe ON c.id_periodo_escolar = pe.id_periodo_escolar
+LEFT JOIN 
+    inscripciones i ON c.id_ano = i.id_ano AND c.id_seccion = i.id_seccion AND c.id_periodo_escolar = i.id_periodo_escolar
+LEFT JOIN 
+    estudiantes e ON i.id_estudiante = e.id_estudiante
+WHERE
+    d.cedula = '32986552'
+    AND pe.activo = TRUE; 
+`
+
+
+  
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       <StatCard
         title="Mis Estudiantes"
-        value={total}
+        value={total_estudiantes_impartidos}
         icon={Users}
-        description="6 secciones activas"
+        description={`${total_materias_impartidas} materias impartidas`}
         descriptionIcon={GraduationCap}
         trend="neutral"
       />
       <StatCard
         title="Promedio General"
-        value="8.3"
+        value={promedio}
         icon={Award}
         description="+0.2 este mes"
         descriptionIcon={TrendingUp}
@@ -25,9 +46,9 @@ export async function StatsCards({}) {
       />
       <StatCard
         title="Materias"
-        value={3}
+        value={materias.length }
         icon={BookOpen}
-        description="Matemáticas, Álgebra, Geometría"
+        description={materias.join(", ")}
         descriptionIcon={BarChart3}
         trend="neutral"
       />
