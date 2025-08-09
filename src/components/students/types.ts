@@ -1,22 +1,23 @@
 export interface Student {
   id: string
-  name: string
+  nombres: string
+  apellidos: string
   avatar?: string
-  year: string
-  section: string
-  grades: Grade[]
-  average: number
-  status: "active" | "inactive"
-  email: string
-  phone?: string
+  ano: string
+  seccion: string
+  detalle_materias: Grade[] | string
+  promedio_general: number
+  status: "activo" | "inactivo"
+ 
+ 
 }
 
 export interface Grade {
   subject: string
-  score: number
-  maxScore: number
-  date: string
-  type: "exam" | "homework" | "project" | "quiz"
+  average: number,
+  notes: number[]
+  date?: string
+  type?: "exam" | "homework" | "project" | "quiz"
 }
 
 export interface StudentFilters {
@@ -24,4 +25,18 @@ export interface StudentFilters {
   section?: string
   status?: string
   search?: string
+  años?: AñoData[]
+  secciones? : SeccionData[]
 }
+
+
+export interface AñoData {
+  nombre: string;
+  id: number;
+}
+
+export interface SeccionData {
+  nombre: string;
+  id: number;
+}
+
