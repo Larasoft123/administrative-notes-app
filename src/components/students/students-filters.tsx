@@ -1,6 +1,8 @@
+"use client"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import {useDebouncedCallback} from "use-debounce"
 import {
   Select,
   SelectContent,
@@ -8,28 +10,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Search, Filter, X } from 'lucide-react'
+import { Search, } from 'lucide-react'
 import type { StudentFilters } from "./types"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
-interface StudentsFiltersProps {
-  filters: StudentFilters
-  onFiltersChange: (filters: StudentFilters) => void
-  totalStudents: number
-  filteredCount: number
-}
 
-export function StudentsFilters({ filters, onFiltersChange, totalStudents, filteredCount }: StudentsFiltersProps) {
-  const clearFilters = () => {
-    onFiltersChange({})
+
+
+
+
+export function StudentsFilters({ años, secciones }: StudentFilters) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+
+
+
+
+  const handleSelectChange = ({ value, name }: { value?: string, name: string }) => {
+    const params = new URLSearchParams(searchParams);
+    if (value && value !== "todos") {
+      params.set(name, value)
+    } else {
+      params.delete(name)
+    }
+    router.replace(`${pathname}?${params.toString()}`);
   }
 
-  const removeFilter = (key: keyof StudentFilters) => {
-    const newFilters = { ...filters }
-    delete newFilters[key]
-    onFiltersChange(newFilters)
-  }
 
-  const hasActiveFilters = Object.keys(filters).length > 0
+
+
+  const handleChange = useDebouncedCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const params = new URLSearchParams(searchParams);
+    const { value } = e.target;
+    console.log(value );
+    if (value) {
+      params.set('search', value)
+    } else {
+      params.delete('search')
+    }
+    router.replace(`${pathname}?${params.toString()}`);
+  },500);
+
+
+
+
+
+
+
 
   return (
     <div className="space-y-4">
@@ -39,57 +67,55 @@ export function StudentsFilters({ filters, onFiltersChange, totalStudents, filte
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
+
             placeholder="Buscar estudiantes por nombre..."
-            value={filters.search || ""}
-            onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+            defaultValue={searchParams.get("search")?.toString()}
+            onChange={handleChange}
             className="pl-10"
           />
         </div>
-        
+
         {/* Filters row */}
-        <div className="grid grid-cols-3 gap-2 sm:flex sm:gap-2">
-          <Select 
-            value={filters.year || "all"} 
-            onValueChange={(value) => onFiltersChange({ ...filters, year: value === "all" ? undefined : value })}
+        <div className="grid grid-cols-3 sm:justify-start justify-center gap-2 sm:flex sm:gap-2">
+
+          <Select
+            defaultValue={searchParams.get("year")?.toString()}
+            onValueChange={(value) => handleSelectChange({ name: "year", value })}
           >
-            <SelectTrigger className="text-xs sm:text-sm sm:w-32">
+            <SelectTrigger className="text-xs sm:text-sm justify-self-center sm:w-32">
               <SelectValue placeholder="Año" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="1°">1° Año</SelectItem>
-              <SelectItem value="2°">2° Año</SelectItem>
-              <SelectItem value="3°">3° Año</SelectItem>
-              <SelectItem value="4°">4° Año</SelectItem>
+              <SelectItem value="todos">Todos</SelectItem>
+              {años?.map((({ id, nombre }) => (<SelectItem key={id} value={nombre} >{nombre} </SelectItem>)))}
             </SelectContent>
           </Select>
 
-          <Select 
-            value={filters.section || "all"} 
-            onValueChange={(value) => onFiltersChange({ ...filters, section: value === "all" ? undefined : value })}
+          <Select
+            defaultValue={searchParams.get("section")?.toString()}
+
+            onValueChange={(value) => handleSelectChange({ name: "section", value })}
           >
-            <SelectTrigger className="text-xs sm:text-sm sm:w-32">
+            <SelectTrigger className="text-xs justify-self-center sm:text-sm sm:w-32">
               <SelectValue placeholder="Sección" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              <SelectItem value="A">Sección A</SelectItem>
-              <SelectItem value="B">Sección B</SelectItem>
-              <SelectItem value="C">Sección C</SelectItem>
+              <SelectItem value="todos">Todas</SelectItem>
+              {secciones?.map((({ id, nombre }) => (<SelectItem key={id} value={nombre} >{nombre} </SelectItem>)))}
             </SelectContent>
           </Select>
 
-          <Select 
-            value={filters.status || "all"} 
-            onValueChange={(value) => onFiltersChange({ ...filters, status: value === "all" ? undefined : value })}
+          <Select
+            defaultValue={searchParams.get("status")?.toString() || "activo"}
+            onValueChange={(value) => handleSelectChange({ name: "status", value })}
           >
-            <SelectTrigger className="text-xs sm:text-sm sm:w-32">
+            <SelectTrigger className="text-xs justify-self-center sm:text-sm sm:w-32">
               <SelectValue placeholder="Estado" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              <SelectItem value="active">Activos</SelectItem>
-              <SelectItem value="inactive">Inactivos</SelectItem>
+              <SelectItem value="todos">Todos</SelectItem>
+              <SelectItem value="activo">Activos</SelectItem>
+              <SelectItem value="inactivo">Inactivos</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -97,45 +123,8 @@ export function StudentsFilters({ filters, onFiltersChange, totalStudents, filte
 
       {/* Active Filters and Results */}
       <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
-        <div className="flex flex-wrap items-center gap-2">
-          {hasActiveFilters && (
-            <>
-              <div className="flex items-center gap-2">
-                <Filter className="h-4 w-4 text-gray-500" />
-                <span className="text-sm text-gray-500">Filtros:</span>
-              </div>
-              {filters.search && (
-                <Badge variant="secondary" className="gap-1 text-xs">
-                  {filters.search}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter("search")} />
-                </Badge>
-              )}
-              {filters.year && (
-                <Badge variant="secondary" className="gap-1 text-xs">
-                  {filters.year}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter("year")} />
-                </Badge>
-              )}
-              {filters.section && (
-                <Badge variant="secondary" className="gap-1 text-xs">
-                  Sec. {filters.section}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter("section")} />
-                </Badge>
-              )}
-              {filters.status && (
-                <Badge variant="secondary" className="gap-1 text-xs">
-                  {filters.status === "active" ? "Activos" : "Inactivos"}
-                  <X className="h-3 w-3 cursor-pointer" onClick={() => removeFilter("status")} />
-                </Badge>
-              )}
-              <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs">
-                Limpiar
-              </Button>
-            </>
-          )}
-        </div>
         <div className="text-xs sm:text-sm text-gray-500">
-          {filteredCount} de {totalStudents} estudiantes
+          de  estudiantes
         </div>
       </div>
     </div>
