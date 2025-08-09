@@ -20,7 +20,7 @@ LEFT JOIN
 LEFT JOIN 
     estudiantes e ON i.id_estudiante = e.id_estudiante
 WHERE
-    d.cedula = '32986552'
+    d.cedula = '10111222'
     AND pe.activo = TRUE; 
 `
 
