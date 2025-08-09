@@ -1,7 +1,7 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { sql } from "@/lib/db";
-import { User } from "@/utils/types.d";
+import { User } from "@/types/types.d";
 
 async function getUserByEmailAndRole({
   email,
