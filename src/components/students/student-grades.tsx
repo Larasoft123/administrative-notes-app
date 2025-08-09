@@ -10,11 +10,14 @@ interface StudentGradesProps {
 
 export function StudentGrades({ grades, average }: StudentGradesProps) {
   const getAverageColor = (avg: number) => {
-    if (avg >= 9) return "text-green-600"
-    if (avg >= 8) return "text-blue-600"
-    if (avg >= 7) return "text-yellow-600"
+    if (avg >= 18) return "text-green-600"
+    if (avg >= 14) return "text-blue-600"
+    if (avg >= 10) return "text-yellow-600"
     return "text-red-600"
   }
+
+
+
 
   return (
     <Card className="w-full">
@@ -28,19 +31,25 @@ export function StudentGrades({ grades, average }: StudentGradesProps) {
             <CardDescription>Promedio</CardDescription>
           </div>
         </div>
-        <Progress value={average * 10} className="h-2" />
+        <Progress value={average * 5} className="h-2" />
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {grades.slice(0, 4).map((grade, index) => (
-            <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+            <div key={grade.subject} className="flex  items-start justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
               <div className="flex-1">
-                <p className="font-medium text-sm">{grade.subject}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{grade.date}</p>
+                <p className="font-medium text-sm">{grade.subject} </p>
+                {/* <p className="text-xs text-gray-500 dark:text-gray-400">{grade.average}</p> */}
               </div>
-              <GradeBadge score={grade.score} maxScore={grade.maxScore} type={grade.type} />
+
+
+              <div className="flex flex-wrap justify-end gap-4">
+                {grade.notes.map((note,index) => <GradeBadge key={index} score={note} maxScore={20} />)}
+              </div>
             </div>
           ))}
+
+
           {grades.length > 4 && (
             <p className="text-xs text-center text-gray-500 dark:text-gray-400">
               +{grades.length - 4} calificaciones más
