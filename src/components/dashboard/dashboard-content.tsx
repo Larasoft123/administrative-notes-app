@@ -27,7 +27,7 @@ export async function DashboardContent() {
   JOIN
       periodos_escolares pe ON c.id_periodo_escolar = pe.id_periodo_escolar
   WHERE
-      d.cedula = '32986552' 
+      d.cedula = '10222333' 
   ORDER BY
       d.apellidos,
       d.nombres,
@@ -65,9 +65,12 @@ export async function DashboardContent() {
   })
 
 
+  
+
+
   const sectionsPerformance = await sql`SELECT
     a.nombre_ano || ' ' || s.nombre_seccion AS section, 
-    ROUND(AVG(n.calificacion), 2) AS promedio,
+     COALESCE(ROUND(AVG(n.calificacion), 2),0) AS promedio,
     COUNT(DISTINCT e.id_estudiante) AS estudiantes
 FROM
     estudiantes e
@@ -90,6 +93,8 @@ ORDER BY
     a.nombre_ano,
     s.nombre_seccion;
 `
+
+
 
 
 
