@@ -4,12 +4,18 @@ import { withAuth } from "next-auth/middleware";
 export default withAuth({
   callbacks: {
     authorized({ req, token }) {
-        console.log(req.nextUrl.pathname);
-      if (req.nextUrl.pathname.startsWith("/api/auth")) {
+      if (req.nextUrl.pathname.startsWith("/api")) {
         return true;
       }
+
+
+      if (!token) {   
+        return false;  
+      }
+
+      return true;
+
       
-      return !!token;
     },
   },
 
