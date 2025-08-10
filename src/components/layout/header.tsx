@@ -11,13 +11,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Menu, Moon, Sun, Bell, Search, Settings, LogOut, User } from "lucide-react"
+import { Menu, Bell, Search, Settings, LogOut, User } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Sidebar } from "@/components/layout/sidebar"
 import { ThemeToggle } from "@/components/theme/theme-toggle"
+import { signOut } from "next-auth/react"
+
+export function Header() {
 
 
-export function Header({ }) {
+
+  const handleLogout = async () => {
+    await signOut()
+  }
+
+
   return (
     <header className="sticky  top-0 z-50 w-full border-b border-gray-200 dark:border-gray-800 bg-white/95 dark:bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-900/60">
       <div className="flex h-16 items-center justify-between px-4 lg:px-12">
@@ -95,7 +103,7 @@ export function Header({ }) {
                 <span>Configuración</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
