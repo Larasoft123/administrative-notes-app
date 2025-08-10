@@ -1,9 +1,11 @@
-import { DashboardHeader } from "@//components/dashboard/dashboard-header"
-import { StatsCards } from "@//components/dashboard/stats-cards"
-import { PerformanceCharts } from "@//components/dashboard/performance-charts"
-import { UpcomingTasks } from "@//components/dashboard/upcoming-tasks"
-import { SubjectsGrid } from "@//components/dashboard/subjects-grid"
+import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import { StatsCards } from "@/components/dashboard/stats-cards"
+import { ChartsContainer } from "@/components/dashboard/charts-container"
+import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks"
+import { SubjectsGrid } from "@/components/dashboard/subjects-grid"
 import { sql } from "@/lib/db"
+import { Suspense } from "react"
+import { PeformanceChartsSkeleton } from "@/components/dashboard/performance-charts-skeleton"
 
 export async function DashboardContent() {
     const materiasDocent = await sql`SELECT
@@ -52,47 +54,17 @@ export async function DashboardContent() {
 
 
 
-  const materias = Object.groupBy(materiasDocent, (materia) => materia.nombre_materia)
+    const materias = Object.groupBy(materiasDocent, (materia) => materia.nombre_materia)
 
-  const namesMaterias = Object.keys(materias)
+    const namesMaterias = Object.keys(materias)
 
-  const materiasProcesadas = namesMaterias.map((key) => {
-    const años: any[] = []
-    materias[key]?.forEach((materia) => {
-      años.push({ año: materia.ano_impartido, seccion: materia.seccion_impartida })
+    const materiasProcesadas = namesMaterias.map((key) => {
+        const años: any[] = []
+        materias[key]?.forEach((materia) => {
+            años.push({ año: materia.ano_impartido, seccion: materia.seccion_impartida })
+        })
+        return { name: key, sections: años }
     })
-    return { name: key, sections: años }
-  })
-
-
-  
-
-
-  const sectionsPerformance = await sql`SELECT
-    a.nombre_ano || ' ' || s.nombre_seccion AS section, 
-     COALESCE(ROUND(AVG(n.calificacion), 2),0) AS promedio,
-    COUNT(DISTINCT e.id_estudiante) AS estudiantes
-FROM
-    estudiantes e
-JOIN
-    inscripciones i ON e.id_estudiante = i.id_estudiante
-JOIN
-    periodos_escolares pe ON i.id_periodo_escolar = pe.id_periodo_escolar
-JOIN
-    anos a ON i.id_ano = a.id_ano
-JOIN
-    secciones s ON i.id_seccion = s.id_seccion
-LEFT JOIN 
-    notas n ON i.id_inscripcion = n.id_inscripcion
-WHERE
-    pe.activo = TRUE 
-GROUP BY
-    a.nombre_ano,
-    s.nombre_seccion
-ORDER BY
-    a.nombre_ano,
-    s.nombre_seccion;
-`
 
 
 
@@ -100,25 +72,31 @@ ORDER BY
 
 
 
-  return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <DashboardHeader />
 
-      {/* Stats Cards */}
-      <StatsCards promedio={+promedio_estudiantes} materias={namesMaterias} />
 
-      {/* Main Content */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Charts Section */}
-        <PerformanceCharts sectionsPerformance={sectionsPerformance} />
 
-        {/* Upcoming Tasks */}
-        <UpcomingTasks />
-      </div>
 
-      {/* Subjects Section */}
-      <SubjectsGrid subjects={materiasProcesadas} />
-    </div>
-  )
+    return (
+        <div className="space-y-6">
+            {/* Page Header */}
+            <DashboardHeader />
+
+            {/* Stats Cards */}
+            <StatsCards promedio={+promedio_estudiantes} materias={namesMaterias} />
+
+            {/* Main Content */}
+            <div className="grid gap-6 lg:grid-cols-3">
+                {/* Charts Section */}
+                <Suspense fallback={<PeformanceChartsSkeleton />}>
+                    <ChartsContainer />
+                </Suspense>
+
+                {/* Upcoming Tasks */}
+                <UpcomingTasks />
+            </div>
+
+            {/* Subjects Section */}
+            <SubjectsGrid subjects={materiasProcesadas} />
+        </div>
+    )
 }
