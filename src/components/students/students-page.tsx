@@ -5,14 +5,23 @@ import { StudentsGrid } from "@/components/students/students-grid"
 import { getStudentsPageData } from "@/components/students/lib/fetch-data"
 import { StudentFilters } from "./types"
 import { Suspense } from "react"
+import { getSessionServer } from "@/utils/session"
 
 
 
 export async function StudentsPage({ searchParams }: { searchParams: StudentFilters }) {
 
 
+  const session = await getSessionServer()
 
-  const [years, sections] = await getStudentsPageData()
+  if (!session) {
+    return <div>No se ha iniciado sesión</div>
+  }
+
+  const [years, sections] = await getStudentsPageData({id:session.user.id})
+
+
+
 
 
 
@@ -37,7 +46,7 @@ export async function StudentsPage({ searchParams }: { searchParams: StudentFilt
 
 
 
-      <Suspense    fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div>Loading...</div>}>
         <StudentsGrid
           searchParams={searchParams}
         />
