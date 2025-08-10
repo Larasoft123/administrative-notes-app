@@ -34,7 +34,8 @@ export default function LoginForm() {
 
     if (email !== "" && password !== "") {
       await signIn("credentials", {
-        redirect: false,
+        callbackUrl: "/",
+     
         email,
         password,
         role
