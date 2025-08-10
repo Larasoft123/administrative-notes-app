@@ -31,14 +31,14 @@ export async function getYears() {
 }
 
 
-export async function getSections() {
-  const newSectionsReponse =  await fetch(`http://localhost:3000/api/secciones`);
+export async function getSections({id}:{id:number}) {
+  const newSectionsReponse =  await fetch(`http://localhost:3000/api/secciones?userId=${id}`);
   const sections = await newSectionsReponse.json();
   return sections;
 }
 
-export async function getStudentsPageData() {
+export async function getStudentsPageData({id}: {id:number}) {
 
-  const data = await Promise.all([getYears(), getSections()])
+  const data = await Promise.all([getYears(), getSections({id})])
   return data;
 }
