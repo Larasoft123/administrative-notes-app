@@ -84,7 +84,7 @@ export const authOptions: AuthOptions = {
 
       token.id = user.id as number;
       token.role = user.role
-      console.log("jwt ",token);
+     
       
 
       return token;
@@ -96,7 +96,7 @@ export const authOptions: AuthOptions = {
       session.user.email = token.email ?? ""
       session.user.id = token.id
       
-      console.log("session ",session);
+     
 
   
      
