@@ -1,7 +1,7 @@
 import { StudentCard } from "./student-card"
-import type { Student } from "./types"
-import { StudentFilters } from "./types"
-import { getStudentsWithInfo } from "@/components/students/lib/fetch-data"
+import type { Student } from "@/types/types.d"
+import { StudentFilters } from "@/types/types.d"
+import { getStudentsWithInfo } from "@/lib/api/students"
 
 
 export async function StudentsGrid({ searchParams }: { searchParams: StudentFilters }) {
