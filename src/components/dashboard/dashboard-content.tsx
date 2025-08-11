@@ -1,13 +1,40 @@
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { ChartsContainer } from "@/components/dashboard/charts-container"
-import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks"
+import { UpcomingActivitys } from "@/components/dashboard/upcoming-activitis"
 import { SubjectsGrid } from "@/components/dashboard/subjects-grid"
 import { sql } from "@/lib/db"
 import { Suspense } from "react"
 import { PeformanceChartsSkeleton } from "@/components/dashboard/performance-charts-skeleton"
+import { getSessionServer } from "@/utils/session"
+import { UpcomingActivitiesSkeleton } from "@/components/dashboard/upcoming-activities-skeleton"
+import { SubjectsGridSkeleton } from "@/components/dashboard/subjects-grid-skeleton"
 
 export async function DashboardContent() {
+
+
+    const session = await getSessionServer()
+    if (!session) {
+        return <div>No se ha iniciado sesión</div>
+    }
+    const { user: { id, role } } = session
+
+
+    const [{ promedio_estudiantes }] = await sql`SELECT
+      ROUND(AVG(n.calificacion),2) AS promedio_estudiantes 
+  FROM
+      estudiantes e
+  JOIN
+      inscripciones i ON e.id_estudiante = i.id_estudiante
+  JOIN
+      periodos_escolares pe ON i.id_periodo_escolar = pe.id_periodo_escolar
+  JOIN
+      notas n ON i.id_inscripcion = n.id_inscripcion
+  WHERE
+      pe.activo = TRUE;`
+
+
+
     const materiasDocent = await sql`SELECT
       d.id_docente as docente_id,
       d.nombres AS docente_nombres,
@@ -29,7 +56,7 @@ export async function DashboardContent() {
   JOIN
       periodos_escolares pe ON c.id_periodo_escolar = pe.id_periodo_escolar
   WHERE
-      d.cedula = '10222333' 
+      d.id_docente = ${id} 
   ORDER BY
       d.apellidos,
       d.nombres,
@@ -38,33 +65,14 @@ export async function DashboardContent() {
       seccion_impartida;
   `
 
-    const [{ promedio_estudiantes }] = await sql`SELECT
-      ROUND(AVG(n.calificacion),2) AS promedio_estudiantes 
-  FROM
-      estudiantes e
-  JOIN
-      inscripciones i ON e.id_estudiante = i.id_estudiante
-  JOIN
-      periodos_escolares pe ON i.id_periodo_escolar = pe.id_periodo_escolar
-  JOIN
-      notas n ON i.id_inscripcion = n.id_inscripcion
-  WHERE
-      pe.activo = TRUE;`
-
-
-
-
     const materias = Object.groupBy(materiasDocent, (materia) => materia.nombre_materia)
 
     const namesMaterias = Object.keys(materias)
 
-    const materiasProcesadas = namesMaterias.map((key) => {
-        const años: any[] = []
-        materias[key]?.forEach((materia) => {
-            años.push({ año: materia.ano_impartido, seccion: materia.seccion_impartida })
-        })
-        return { name: key, sections: años }
-    })
+
+
+
+
 
 
 
@@ -91,12 +99,16 @@ export async function DashboardContent() {
                     <ChartsContainer />
                 </Suspense>
 
-                {/* Upcoming Tasks */}
-                <UpcomingTasks />
+                <Suspense fallback={<UpcomingActivitiesSkeleton />}>
+                    <UpcomingActivitys userId={id} />
+                </Suspense>
             </div>
 
             {/* Subjects Section */}
-            <SubjectsGrid subjects={materiasProcesadas} />
+
+            <Suspense fallback={<SubjectsGridSkeleton />}>
+                <SubjectsGrid />
+            </Suspense>
         </div>
     )
 }
