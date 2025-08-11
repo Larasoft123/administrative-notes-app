@@ -8,7 +8,7 @@ export default async function Page({searchParams }: {searchParams : StudentFilte
    
       
     return (
-        <div className="min-h-screen ">
+        <div className="min-h-screen">
             <StudentsPage searchParams={params} />   
         </div>
     )
