@@ -1,7 +1,5 @@
 "use client"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import {useDebouncedCallback} from "use-debounce"
 import {
   Select,
@@ -11,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Search, } from 'lucide-react'
-import type { StudentFilters } from "./types"
+import type { StudentFilters } from "@/types/types.d"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 
