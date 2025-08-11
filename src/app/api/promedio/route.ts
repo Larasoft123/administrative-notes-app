@@ -9,27 +9,21 @@ export async function GET(request: NextRequest) {
 
   const promedioSelect = searchParams.get("entidad") as PromedioSelect;
 
-
   try {
     if (promedioSelect === "estudiantes") {
-    const promedio = await Promedio.estudiantes()
-    return NextResponse.json({promedio})
-  }
-    
+      const promedio = await Promedio.estudiantes();
+      return NextResponse.json({ promedio });
+    }
   } catch (error) {
-    console.log(error)
-    return NextResponse.json({error})
-    
+    console.log(error);
+    return NextResponse.json({ error });
   }
-
-  
 }
 
 class Promedio {
   static async estudiantes(): Promise<number | Error> {
-
-    try { 
-        const [{ promedio_estudiantes }] = await sql`SELECT
+    try {
+      const [{ promedio_estudiantes }] = await sql`SELECT
           ROUND(AVG(n.calificacion),2) AS promedio_estudiantes 
       FROM
           estudiantes e
@@ -41,17 +35,10 @@ class Promedio {
           notas n ON i.id_inscripcion = n.id_inscripcion
       WHERE
           pe.activo = TRUE;`;
-    
-          return promedio_estudiantes
-    } 
-      catch (error) {
-        throw new Error("Error al obtener el promedio de estudiantes")      
+
+      return promedio_estudiantes;
+    } catch (error) {
+      throw new Error("Error al obtener el promedio de estudiantes");
     }
   }
-
-
-
-
-
-
 }
