@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { sql } from "@/lib/db";
-import { Student } from "@/components/students/types";
+import { Student } from "@/types/types.d";
 import { revalidatePath } from "next/cache";
 
 
