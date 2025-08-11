@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge"
 interface GradeBadgeProps {
   score: number
   maxScore: number
-  type: "exam" | "homework" | "project" | "quiz"
+  type?: "exam" | "homework" | "project" | "quiz"
 }
 
 export function GradeBadge({ score, maxScore, type }: GradeBadgeProps) {
@@ -38,10 +38,10 @@ export function GradeBadge({ score, maxScore, type }: GradeBadgeProps) {
       <Badge variant={getVariant(percentage)} className="font-medium text-xs">
         {score}/{maxScore}
       </Badge>
-      <Badge variant="outline" className={`text-xs ${getTypeColor(type)}`}>
-        <span className="sm:hidden">{typeLabels[type]}</span>
-        <span className="hidden sm:inline">{type}</span>
-      </Badge>
+      {/* <Badge variant="outline" className={`text-xs `}> */}
+        {/* <span className="sm:hidden">{typeLabels[type]}</span> */}
+        {/* <span className="hidden sm:inline">{type}</span> */}
+      {/* </Badge> */}
     </div>
   )
 }
