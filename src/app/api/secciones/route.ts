@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { sql } from "@/lib/db";
-import { SeccionData } from "@/components/students/types";
+import { SeccionData } from "@/types/types.d";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth";
 
@@ -103,7 +103,7 @@ class Secciones {
       const params = [id];
 
       const sectionsPerformance = await sql.query(query, params);
-      console.log(sectionsPerformance);
+   
 
       return sectionsPerformance;
     } catch (error) {
