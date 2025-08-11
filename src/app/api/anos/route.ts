@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { sql } from "@/lib/db";
-import { AñoData } from "@/components/students/types";
+import { AñoData } from "@/types/types.d";
 
 
 
