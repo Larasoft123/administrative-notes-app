@@ -2,8 +2,8 @@
 import { StudentsHeader } from "@/components/students/students-header"
 import { StudentsFilters } from "@/components/students/students-filters"
 import { StudentsGrid } from "@/components/students/students-grid"
-import { getStudentsPageData } from "@/components/students/lib/fetch-data"
-import { StudentFilters } from "./types"
+import { getStudentsPageData } from "@/lib/api/students"
+import { StudentFilters } from "@/types/types.d"
 import { Suspense } from "react"
 import { getSessionServer } from "@/utils/session"
 
