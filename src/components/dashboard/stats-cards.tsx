@@ -1,10 +1,18 @@
 import { Users, GraduationCap, BookOpen, Award, TrendingUp, BarChart3, } from "lucide-react"
 import { StatCard } from "@/components/dashboard/stat-card"
 import { sql } from "@/lib/db"
+import { getSessionServer } from "@/utils/session"
 
 export async function StatsCards({materias,promedio}: {materias: string[], promedio: number}) {
+  const session = await getSessionServer()
 
-  const [{total_estudiantes_impartidos, total_materias_impartidas}] = await sql`SELECT
+  if(!session) {
+    return <div>No se ha iniciado sesión</div>
+  }
+
+
+  const params= [session.user.id]
+  const query= `SELECT
     COUNT(DISTINCT e.id_estudiante) AS total_estudiantes_impartidos,
     COUNT(DISTINCT m.id_materia) AS total_materias_impartidas
 FROM
@@ -20,10 +28,17 @@ LEFT JOIN
 LEFT JOIN 
     estudiantes e ON i.id_estudiante = e.id_estudiante
 WHERE
-    d.cedula = '10111222'
+    d.id_docente = $1
     AND pe.activo = TRUE; 
 `
 
+
+
+
+
+
+
+  const [{total_estudiantes_impartidos, total_materias_impartidas}] = await sql.query(query,params)
 
   
   return (
