@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Eye } from 'lucide-react'
 import { StudentAvatar } from "@/components/students/student-avatar"
 import { StudentGrades } from "@/components/students/student-grades"
-import type { Student } from "./types"
+import type { Student } from "@/types/types.d"
 
 interface StudentCardProps {
   student: Student
