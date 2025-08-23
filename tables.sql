@@ -581,7 +581,17 @@ CREATE TABLE notas (
 
 
 
+
+-- query for get the mediana of a column
+SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY calificacion) AS mediana from notas n JOIN inscripciones i ON i.id_inscripcion=n.id_inscripcion
+JOIN periodos_escolares pe ON pe.id_periodo_escolar=i.id_periodo_escolar
+WHERE pe.activo=true;
+
+
+
 -- insert for initial data
+
+
 
 
 INSERT INTO roles (nombre_rol) VALUES
