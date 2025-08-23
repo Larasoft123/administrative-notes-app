@@ -20,20 +20,6 @@ export async function DashboardContent() {
     const { user: { id, role } } = session
 
 
-    const [{ promedio_estudiantes }] = await sql`SELECT
-      ROUND(AVG(n.calificacion),2) AS promedio_estudiantes 
-  FROM
-      estudiantes e
-  JOIN
-      inscripciones i ON e.id_estudiante = i.id_estudiante
-  JOIN
-      periodos_escolares pe ON i.id_periodo_escolar = pe.id_periodo_escolar
-  JOIN
-      notas n ON i.id_inscripcion = n.id_inscripcion
-  WHERE
-      pe.activo = TRUE;`
-
-
 
     const materiasDocent = await sql`SELECT
       d.id_docente as docente_id,
@@ -84,13 +70,14 @@ export async function DashboardContent() {
 
 
 
+
     return (
         <div className="space-y-6">
             {/* Page Header */}
             <DashboardHeader />
 
             {/* Stats Cards */}
-            <StatsCards promedio={+promedio_estudiantes} materias={namesMaterias} />
+            <StatsCards materias={namesMaterias} />
 
             {/* Main Content */}
             <div className="grid gap-6 lg:grid-cols-3">
