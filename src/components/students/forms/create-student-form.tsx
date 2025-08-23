@@ -20,7 +20,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Form, FormField, FormControl, FormLabel, FormDescription, FormItem, FormMessage } from "@/components/ui/form"
-
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface StudentFormData {
     cedula: string | undefined
@@ -28,9 +28,10 @@ interface StudentFormData {
     apellido: string
     fecha_nacimiento: Date
     direccion: string | undefined
+    inscribirlo: boolean
 }
 
-export function CreateStudentForm({  }) {
+export function CreateStudentForm({ }) {
     const form = useForm<StudentFormData>({
         defaultValues: {
             cedula: '',
@@ -38,6 +39,7 @@ export function CreateStudentForm({  }) {
             apellido: "",
             fecha_nacimiento: undefined,
             direccion: '',
+            inscribirlo: false
         },
     })
 
@@ -56,19 +58,18 @@ export function CreateStudentForm({  }) {
 
     const handleFormSubmit = async (data: StudentFormData) => {
 
-        const studentData = data;
-        const res = await fetch("/api/estudiantes",{
+        const res = await fetch("/api/estudiantes", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(studentData)
+            body: JSON.stringify(data)
         })
 
         const json = await res.json()
-        console.log({res,json} );
-        
-     
+        console.log({ res, json });
+
+
     }
 
     const currentYear = new Date().getFullYear()
@@ -203,12 +204,12 @@ export function CreateStudentForm({  }) {
                                     onChange: (event) => {
                                         const date = event.target.value as Date
                                         const now = new Date()
-                                       if(date > new Date() || date < new Date("1980-01-01")){
-                                         form.setValue("fecha_nacimiento",now)
-                                       } 
-                                     
+                                        if (date > new Date() || date < new Date("1980-01-01")) {
+                                            form.setValue("fecha_nacimiento", now)
+                                        }
 
-                                    
+
+
 
 
 
@@ -342,6 +343,32 @@ export function CreateStudentForm({  }) {
                                         <FormMessage />
                                     </FormItem>
                                 )}
+                            />
+
+
+                            <FormField
+                                control={form.control}
+                                name="inscribirlo"
+                                render={({ field }) => (
+                                    <FormItem className="flex gap-4 items-center">
+
+                                        <FormControl>
+
+
+                                        <Checkbox
+                                        
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        
+                                        />
+                                        </FormControl>
+                                        <FormLabel className="text-sm">
+                                            Inscribirlo en el periodo escolar activo?
+                                        </FormLabel>
+                                    </FormItem>
+                                )}
+
+
                             />
 
 
