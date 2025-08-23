@@ -11,9 +11,6 @@ interface Subject {
 }
 
 
-interface SubjectsGridProps {
-  subjects?: Subject[]
-}
 
 export async function SubjectsGrid({  }) {
 
@@ -70,7 +67,6 @@ export async function SubjectsGrid({  }) {
   
   
   
-        await new Promise((resolve) => setTimeout(resolve, 2000));
 
 
 
