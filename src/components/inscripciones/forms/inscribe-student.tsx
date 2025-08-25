@@ -6,14 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Loader2, BookOpen, Calendar, GraduationCap } from "lucide-react"
-import { AñoData, SeccionData } from "@/types/types.d"
+import { Loader2, Calendar, GraduationCap } from "lucide-react"
+import { AñoData, SeccionData, PeriodoEscolar } from "@/types/types.d"
+import { useState } from "react"
+import { convertObjectDataToNumber } from "@/utils/convert"
+
 
 const evaluationSchema = z.object({
-    estudiante: z.string().min(1, "Selecciona un estudiante"),
-    seccion: z.string().min(1, "Selecciona una sección"),
-    periodo_escolar: z.string().min(1, "Selecciona un período escolar"),
-    ano: z.string().min(1, "Selecciona un año"),
+    id_estudiante: z.string().min(1, "Selecciona un estudiante"),
+    id_seccion: z.string().min(1, "Selecciona una sección"),
+    id_periodo_escolar: z.string().min(1, "Selecciona un período escolar"),
+    id_ano: z.string().min(1, "Selecciona un año"),
 })
 
 
@@ -25,14 +28,13 @@ const evaluationSchema = z.object({
 
 type EvaluationFormData = z.infer<typeof evaluationSchema>
 
-export function EvaluationForm({ anos, secciones, periodos, students }: { students: any[], anos: AñoData[], secciones: SeccionData[], periodos: string[] }) {
+export function EvaluationForm({ anos, secciones, periodos, students }: { students: any[], anos: AñoData[], secciones: SeccionData[], periodos: PeriodoEscolar[] }) {
     const {
-        register,
         handleSubmit,
         setValue,
         reset,
 
-        formState: { errors, isLoading },
+        formState: { errors, isSubmitting },
     } = useForm<EvaluationFormData>({
         resolver: zodResolver(evaluationSchema),
         defaultValues: {
@@ -40,21 +42,42 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
         },
     })
 
+    const [message, setMessage] = useState<string | null>(null)
 
 
 
     const onSubmit = async (data: EvaluationFormData) => {
+        const newData = convertObjectDataToNumber(data)
+
+        console.log(newData);
+
+
+
 
         try {
-            // Simular envío de datos
-            await new Promise((resolve) => setTimeout(resolve, 2000))
+            const res = await fetch("/api/inscripciones", {
+                method: "POST",
+                body: JSON.stringify(newData)
+            })
+            if (!res.ok) {
+                throw new Error("Error al inscribir al estudiante")
+                setMessage("Error al inscribir al estudiante")
+            }
 
-            console.log("Datos de la evaluación:", data)
+            const json = await res.json()
+            if (Array.isArray(json)) {
+                setMessage("Estudiante inscrito correctamente")
+            }
+
+
+
 
 
 
             reset()
         } catch (error) {
+            setMessage("Error al inscribir al estudiante")
+            console.log(error);
 
         }
     }
@@ -91,22 +114,23 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
                                 <Label htmlFor="estudiante" className="font-medium">
                                     Estudiante
                                 </Label>
-                                <Select onValueChange={(value) => setValue("estudiante", value)}>
+                                <Select onValueChange={(value) => setValue("id_estudiante", value)} >
                                     <SelectTrigger className="">
-                                        <SelectValue placeholder="Selecciona la materia" />
+                                        <SelectValue placeholder="Selecciona el estudiante" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        {students.map(({ id_estudiante, nombre_completo }) => <SelectItem key={`${id_estudiante}`} value={id_estudiante} >{nombre_completo}</SelectItem>)}
+                                        {students.map(({ id_estudiante, nombre_completo }) => <SelectItem key={`${id_estudiante}`} value={String(id_estudiante)}>{nombre_completo}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
-                                {errors.estudiante && <p className="text-sm text-red-600 dark:text-red-400">{errors.estudiante.message}</p>}
+
+                                {errors.id_estudiante && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_estudiante.message}</p>}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="seccion" className="font-medium">
                                     Sección
                                 </Label>
-                                <Select onValueChange={(value) => setValue("seccion", value)}>
+                                <Select onValueChange={(value) => setValue("id_seccion", value)} >
                                     <SelectTrigger className="">
                                         <SelectValue placeholder="Selecciona la sección" />
                                     </SelectTrigger>
@@ -115,25 +139,23 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
                                         {secciones.map(({ id, nombre }) => <SelectItem key={`seccion ${id}`} value={String(id)} >Sección {nombre}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
-                                {errors.seccion && <p className="text-sm text-red-600 dark:text-red-400">{errors.seccion.message}</p>}
+                                {errors.id_seccion && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_seccion.message}</p>}
                             </div>
 
                             <div className="space-y-2">
                                 <Label htmlFor="periodo_escolar" className="font-medium">
                                     Período Escolar
                                 </Label>
-                                <Select onValueChange={(value) => setValue("periodo_escolar", value)}>
+                                <Select onValueChange={(value) => setValue("id_periodo_escolar", value)} >
                                     <SelectTrigger className="">
                                         <SelectValue placeholder="Selecciona el período" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="2024-2025">2024-2025</SelectItem>
-                                        <SelectItem value="2025-2026">2025-2026</SelectItem>
-                                        <SelectItem value="2026-2027">2026-2027</SelectItem>
+                                        {periodos.map(({ activo, nombre, id_periodo_escolar }) => <SelectItem key={`${id_periodo_escolar}`} value={String(id_periodo_escolar)} >{nombre}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
-                                {errors.periodo_escolar && (
-                                    <p className="text-sm text-red-600 dark:text-red-400">{errors.periodo_escolar.message}</p>
+                                {errors.id_periodo_escolar && (
+                                    <p className="text-sm text-red-600 dark:text-red-400">{errors.id_periodo_escolar.message}</p>
                                 )}
                             </div>
 
@@ -141,7 +163,7 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
                                 <Label htmlFor="ano" className="font-medium">
                                     Año Escolar
                                 </Label>
-                                <Select onValueChange={(value) => setValue("ano", value)}>
+                                <Select onValueChange={(value) => setValue("id_ano", value)}>
                                     <SelectTrigger className="">
                                         <SelectValue placeholder="Selecciona el año escolar" />
                                     </SelectTrigger>
@@ -149,24 +171,30 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
                                         {anos.map(({ id, nombre }) => <SelectItem key={`año ${id}`} value={String(id)} >{nombre}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
-                                {errors.ano && <p className="text-sm text-red-600 dark:text-red-400">{errors.ano.message}</p>}
+                                {errors.id_ano && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_ano.message}</p>}
                             </div>
                         </div>
+
+
+                        {message && <div className=" w-full flex justify-center ">
+                            <span className="text-sm ">{message}</span>
+                        </div>}
+
                     </div>
 
                     <div className="flex gap-3 pt-6">
                         <Button
                             type="submit"
-                            disabled={isLoading}
-                            className="flex-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium py-2.5"
+                            disabled={isSubmitting}
+                            className="flex-1 bg-blue-600 disabled:bg-slate-200 disabled:pointer-events-none hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-medium py-2.5"
                         >
-                            {isLoading ? (
+                            {isSubmitting ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Creando Evaluación...
+                                    Inscribiendo
                                 </>
                             ) : (
-                                "Crear Evaluación"
+                                "Inscribir estudiante"
                             )}
                         </Button>
 
@@ -174,7 +202,7 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
                             type="button"
                             variant="outline"
                             onClick={() => reset()}
-                            disabled={isLoading}
+                            disabled={isSubmitting}
                             className="px-6 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-900"
                         >
                             Limpiar
