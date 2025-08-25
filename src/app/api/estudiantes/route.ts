@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { sql } from "@/lib/db";
 import { Student } from "@/types/types.d";
+import { getSessionServer } from "@/utils/session";
 import { revalidatePath } from "next/cache";
-
+import { cn } from "@/lib/utils";
 
 interface StudentFormData {
   cedula?: string | null;
@@ -10,6 +11,9 @@ interface StudentFormData {
   apellido: string;
   fecha_nacimiento: Date;
   direccion?: string | null;
+  inscribirlo: boolean;
+  ano?: number;
+  seccion?: number;
 }
 
 type statusOptions = "todos" | "activo" | "inactivo";
@@ -27,40 +31,74 @@ export async function GET(request: NextRequest) {
   const section = searchParams.get("section") ?? "todos";
   const status = (searchParams.get("status") ?? "todos") as statusOptions;
   const year = searchParams.get("year") ?? "todos";
+  const info = searchParams.get("info") ?? false;
+
+  try {
+    if (info) {
+      const students = (await Students.getStudentsInfo({
+        name,
+        seccion: section,
+        status,
+        año: year,
+      })) as Student[];
+      revalidatePath("/estudiantes");
+      return NextResponse.json(students);      
+    }
+
+
+    const students = (await Students.getStudents())
+    return NextResponse.json(students);
 
 
 
-  
-  const students = await Students.getStudentsInfo({
-    name,
-    seccion: section,
-    status,
-    año: year,
-  }) as Student[];
-  revalidatePath("/estudiantes")
-  return NextResponse.json(students);
+
+
+
+
+  } catch (error) {}
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getSessionServer();
+  if (!session || session.user.role !== "Admin") {
+    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  }
   let {
     apellido,
     fecha_nacimiento,
     nombre,
     cedula = null,
     direccion = null,
+    inscribirlo,
+    ano,
+    seccion,
   } = (await request.json()) as StudentFormData;
 
   cedula == "" ? (cedula = null) : null;
   direccion == "" ? (direccion = null) : null;
 
   try {
-    const student = await Students.createStudent({
-      apellido,
-      fecha_nacimiento,
-      nombre,
-      cedula,
-      direccion,
-    });
+    const student = (
+      await Students.createStudent({
+        inscribirlo: false,
+        apellido,
+        fecha_nacimiento,
+        nombre,
+        cedula,
+        direccion,
+      })
+    )[0];
+
+    if (inscribirlo) {
+      const inscripcion = await Students.inscribeStudent({
+        id_ano: Number(ano),
+        id_seccion: Number(seccion),
+        id_student: student.id_estudiante,
+      });
+      console.log(inscripcion);
+
+      return NextResponse.json({ inscripcion });
+    }
 
     return NextResponse.json({ student });
   } catch (error) {
@@ -134,18 +172,20 @@ HAVING
 ORDER BY ano, seccion, e.apellidos, e.nombres;
     `;
 
-    const params = [name, año, seccion, status];
+      const params = [name, año, seccion, status];
 
-  
-    
-    const students = await sql.query(sqlQuery, params) as Student[];
-
+      const students = (await sql.query(sqlQuery, params)) as Student[];
 
       return students;
     } catch (error) {
       console.log(error);
       throw new Error("Error al obtener los estudiantes");
     }
+  }
+
+  static async getStudents() {
+    const students = await sql.query("SELECT * FROM estudiantes ORDER BY apellidos, nombres");
+    return students;
   }
 
   static async createStudent({
@@ -157,7 +197,7 @@ ORDER BY ano, seccion, e.apellidos, e.nombres;
   }: StudentFormData) {
     try {
       const student = await sql.query(
-        "INSERT INTO estudiantes(cedula,nombres, apellidos,fecha_nacimiento,direccion) VALUES($1,$2,$3,$4,$5)",
+        "INSERT INTO estudiantes(cedula,nombres, apellidos,fecha_nacimiento,direccion) VALUES($1,$2,$3,$4,$5) RETURNING *",
         [cedula, nombre, apellido, fecha_nacimiento, direccion]
       );
 
@@ -165,6 +205,43 @@ ORDER BY ano, seccion, e.apellidos, e.nombres;
     } catch (error) {
       console.log(error);
       throw new Error("Error al crear el estudiante");
+    }
+  }
+
+  static async inscribeStudent({
+    id_student,
+    id_ano,
+    id_seccion,
+  }: {
+    id_student: number;
+    id_ano: number;
+    id_seccion: number;
+  }) {
+    const id_periodo_escolar = Number(
+      (
+        await sql.query(
+          "SELECT id_periodo_escolar FROM periodos_escolares WHERE activo = TRUE"
+        )
+      )[0].id_periodo_escolar
+    );
+
+    console.log(id_periodo_escolar);
+    console.log(typeof id_periodo_escolar);
+
+    const query = `INSERT INTO 
+    inscripciones (id_estudiante,id_ano,id_seccion,id_periodo_escolar)  
+    VALUES($1,$2,$3,$4)
+    `;
+
+    const params: any[] = [id_student, id_ano, id_seccion, id_periodo_escolar];
+
+    try {
+      const inscripcion = await sql.query(query, params);
+      return inscripcion;
+    } catch (error) {
+      console.log(error);
+
+      throw new Error("Error al inscribir el estudiante");
     }
   }
 }
