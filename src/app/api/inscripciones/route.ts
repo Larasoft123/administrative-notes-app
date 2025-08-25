@@ -12,6 +12,8 @@ interface InscripcionFormData {
 export async function POST(req: NextRequest) {
   const { id_estudiante, id_ano, id_seccion, id_periodo_escolar } =
     (await req.json()) as InscripcionFormData;
+    console.log( {id_estudiante, id_ano, id_seccion, id_periodo_escolar});
+    
 
   const session = await getSessionServer();
   if (!session || session.user.role !== "Admin") {
