@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select"
 import { Form, FormField, FormControl, FormLabel, FormDescription, FormItem, FormMessage } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
+import { AñoData, SeccionData } from "@/types/types.d"
 
 interface StudentFormData {
     cedula: string | undefined
@@ -29,9 +30,11 @@ interface StudentFormData {
     fecha_nacimiento: Date
     direccion: string | undefined
     inscribirlo: boolean
+    ano?: number;
+    seccion?: number;
 }
 
-export function CreateStudentForm({ }) {
+export function CreateStudentForm({ anos, secciones }: { anos: AñoData[], secciones: SeccionData[] }) {
     const form = useForm<StudentFormData>({
         defaultValues: {
             cedula: '',
@@ -39,7 +42,8 @@ export function CreateStudentForm({ }) {
             apellido: "",
             fecha_nacimiento: undefined,
             direccion: '',
-            inscribirlo: false
+            inscribirlo: false,
+     
         },
     })
 
@@ -56,7 +60,15 @@ export function CreateStudentForm({ }) {
         return age
     }
 
+
+
+
     const handleFormSubmit = async (data: StudentFormData) => {
+
+        if (data.inscribirlo) {
+            data.ano= Number(data.ano)
+            data.seccion = Number(data.seccion)      
+        }
 
         const res = await fetch("/api/estudiantes", {
             method: "POST",
@@ -355,21 +367,119 @@ export function CreateStudentForm({ }) {
                                         <FormControl>
 
 
-                                        <Checkbox
-                                        
-                                            checked={field.value}
-                                            onCheckedChange={field.onChange}
-                                        
-                                        />
+                                            <Checkbox
+
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+
+                                            />
                                         </FormControl>
                                         <FormLabel className="text-sm">
                                             Inscribirlo en el periodo escolar activo?
                                         </FormLabel>
                                     </FormItem>
                                 )}
-
-
                             />
+
+
+                            {form.watch("inscribirlo").valueOf() && (
+                                <div className="grid  grid-cols-1 items-center md:grid-cols-2 justify-center">
+
+                                    <div className="flex justify-center">
+                                        <FormField
+                                            name="ano"
+                                            rules={{
+                                                required: "El año es requerido",
+                                            }}
+                                            render={({ field }) => (
+                                                <div >
+                                                    <FormItem className="w-full">
+                                                        <FormLabel className="flex items-center">
+                                                            Año a inscribirlo
+                                                        </FormLabel>
+
+                                                        <FormControl>
+
+
+                                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                                <SelectTrigger className="">
+                                                                    <SelectValue placeholder="Año" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {anos.map(({ id, nombre }) => (
+                                                                        <SelectItem key={id} 
+                                                                        value={id.toString()}
+                                                                        >
+                                                                            {nombre}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+
+
+                                                        </FormControl>
+                                                        <FormMessage />
+
+
+                                                    </FormItem>
+
+                                                </div>
+
+                                            )}
+                                        />
+
+                                    </div>
+
+
+                                    <div className="flex justify-center">
+                                        <FormField
+                                            name="seccion"
+                                            rules={{
+                                                required: "La sección es requerida",
+                                            }}
+                                            render={({ field }) => (
+                                                <div>
+                                                    <FormItem>
+                                                        <FormLabel className="flex items-center">
+                                                            Seccion a inscribirlo
+                                                        </FormLabel>
+
+                                                        <FormControl>
+
+
+                                                            <Select value={field.value} onValueChange={field.onChange}>
+                                                                <SelectTrigger className="">
+                                                                    <SelectValue placeholder="Año" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {secciones.map(({id,nombre}) => (
+                                                                        <SelectItem key={id} value={id.toString()}>
+                                                                            {nombre}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+
+
+                                                        </FormControl>
+                                                        <FormMessage />
+
+                                                    </FormItem>
+
+                                                </div>
+
+                                            )}
+                                        />
+
+                                    </div>
+
+
+
+                                </div>
+                            )}
+
+
+
 
 
                             {/* Botones */}
@@ -388,6 +498,6 @@ export function CreateStudentForm({ }) {
                     </Form>
                 </CardContent>
             </Card>
-        </div>
+        </div >
     )
 }
