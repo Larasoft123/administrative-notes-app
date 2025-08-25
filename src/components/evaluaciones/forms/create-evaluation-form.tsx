@@ -8,27 +8,30 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
+import { useState } from "react"
 import { Loader2, BookOpen, Calendar, GraduationCap } from "lucide-react"
-import { LapsoData } from "@/types/types"
-import { AñoData,SeccionData } from "@/types/types.d"
+import { AñoData, SeccionData, Materia, LapsoData, PeriodoEscolar, TipoEvaluacion } from "@/types/types.d"
+import { convertObjectDataToNumber } from "@/utils/convert"
 
 const evaluationSchema = z.object({
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
-  descripcion: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
-  lapso: z.string().min(1, "Selecciona un lapso"),
-  materia: z.string().min(1, "Selecciona una materia"),
-  seccion: z.string().min(1, "Selecciona una sección"),
-  periodo_escolar: z.string().min(1, "Selecciona un período escolar"),
-  ano: z.string().min(1, "Selecciona un año"),
+  descripcion_evaluacion: z.string().min(10, "La descripción debe tener al menos 10 caracteres"),
+  id_lapso: z.string().min(1, "Selecciona un lapso"),
+  id_materia: z.string().min(1, "Selecciona una materia"),
+  id_seccion: z.string().min(1, "Selecciona una sección"),
+  id_periodo_escolar: z.string().min(1, "Selecciona un período escolar"),
+  id_ano: z.string().min(1, "Selecciona un año"),
+  id_tipo_evaluacion: z.string().min(1, "Selecciona un tipo de evaluación"),
 })
 
 
 interface EvaluationFormProps {
   anos: AñoData[]
   secciones: SeccionData[]
-  periodos_escolares?: string[]
-  materias?: string[],
+  periodos_escolares: PeriodoEscolar[]
+  materias: Materia[],
   lapsos: LapsoData[]
+  tiposEvaluaciones: TipoEvaluacion[]
 }
 
 
@@ -38,44 +41,55 @@ interface EvaluationFormProps {
 
 type EvaluationFormData = z.infer<typeof evaluationSchema>
 
-export function EvaluationForm({anos,secciones,periodos_escolares,materias,lapsos}: EvaluationFormProps) {
+export function EvaluationForm({ tiposEvaluaciones, anos, secciones, periodos_escolares, materias, lapsos }: EvaluationFormProps) {
   const {
     register,
     handleSubmit,
     setValue,
     reset,
-    
-    formState: { errors,isLoading },
+
+    formState: { errors, isLoading },
   } = useForm<EvaluationFormData>({
     resolver: zodResolver(evaluationSchema),
     defaultValues: {
       nombre: "",
-      descripcion: "",
-      lapso: "",
-      materia: "",
-      seccion: "",
-      periodo_escolar: "",
-      ano: "",
+      descripcion_evaluacion: "",
+
     },
   })
 
-  console.log({anos,secciones,lapsos});
-  
+  const [message, setMessage] = useState<string | null>(null);
+
+
+
 
   const onSubmit = async (data: EvaluationFormData) => {
-   
+
     try {
-      // Simular envío de datos
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const newData = convertObjectDataToNumber(data)
 
-      console.log("Datos de la evaluación:", data)
 
-   
+      const res = await fetch("/api/evaluaciones", {
+        method: "POST",
+        body: JSON.stringify(newData)
+      })
+
+      if (!res.ok) {
+        const errorJson = await res.json();
+        setMessage(errorJson.error);
+      }
+      const json = await res.json()
+
+
+
+
+
+
 
       reset()
     } catch (error) {
-   
-    } 
+
+    }
   }
 
   return (
@@ -127,10 +141,10 @@ export function EvaluationForm({anos,secciones,periodos_escolares,materias,lapso
                 id="descripcion"
                 placeholder="Describe el contenido y objetivos de la evaluación..."
                 className=" min-h-[100px] resize-none"
-                {...register("descripcion")}
+                {...register("descripcion_evaluacion")}
               />
-              {errors.descripcion && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.descripcion.message}</p>
+              {errors.descripcion_evaluacion && (
+                <p className="text-sm text-red-600 dark:text-red-400">{errors.descripcion_evaluacion.message}</p>
               )}
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 Proporciona detalles sobre el contenido de la evaluación
@@ -150,92 +164,104 @@ export function EvaluationForm({anos,secciones,periodos_escolares,materias,lapso
                 <Label htmlFor="lapso" className="font-medium">
                   Lapso
                 </Label>
-                <Select onValueChange={(value) => setValue("lapso", value)}>
+                <Select onValueChange={(value) => setValue("id_lapso", value)}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Selecciona el lapso" />
                   </SelectTrigger>
                   <SelectContent>
 
-                    {lapsos.map(({id,nombre}) => <SelectItem key={`lapso ${id}`} value={String(id)} >{nombre}</SelectItem> )}
-                 
+                    {lapsos.map(({ id, nombre }) => <SelectItem key={`lapso ${id}`} value={String(id)} >{nombre}</SelectItem>)}
+
                   </SelectContent>
                 </Select>
-                {errors.lapso && <p className="text-sm text-red-600 dark:text-red-400">{errors.lapso.message}</p>}
+                {errors.id_lapso && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_lapso.message}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="materia" className="font-medium">
                   Materia
                 </Label>
-                <Select onValueChange={(value) => setValue("materia", value)}>
+                <Select onValueChange={(value) => setValue("id_materia", value)}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Selecciona la materia" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="matematicas">Matemáticas</SelectItem>
-                    <SelectItem value="lengua">Lengua y Literatura</SelectItem>
-                    <SelectItem value="ciencias">Ciencias Naturales</SelectItem>
-                    <SelectItem value="historia">Historia</SelectItem>
-                    <SelectItem value="geografia">Geografía</SelectItem>
-                    <SelectItem value="ingles">Inglés</SelectItem>
-                    <SelectItem value="educacion_fisica">Educación Física</SelectItem>
-                    <SelectItem value="arte">Educación Artística</SelectItem>
+                    {materias.map(({ id_materia, nombre_materia }) => <SelectItem key={`${id_materia}`} value={String(id_materia)} >{nombre_materia}</SelectItem>)}
                   </SelectContent>
                 </Select>
-                {errors.materia && <p className="text-sm text-red-600 dark:text-red-400">{errors.materia.message}</p>}
+                {errors.id_materia && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_materia.message}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="seccion" className="font-medium">
                   Sección
                 </Label>
-                <Select onValueChange={(value) => setValue("seccion", value)}>
+                <Select onValueChange={(value) => setValue("id_seccion", value)}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Selecciona la sección" />
                   </SelectTrigger>
                   <SelectContent>
-                
-                    {secciones.map(({id,nombre})=> <SelectItem key={`seccion ${id}`}  value={String(id)} >Sección {nombre}</SelectItem> )}
+
+                    {secciones.map(({ id, nombre }) => <SelectItem key={`seccion ${id}`} value={String(id)} >Sección {nombre}</SelectItem>)}
                   </SelectContent>
                 </Select>
-                {errors.seccion && <p className="text-sm text-red-600 dark:text-red-400">{errors.seccion.message}</p>}
+                {errors.id_seccion && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_seccion.message}</p>}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="periodo_escolar" className="font-medium">
                   Período Escolar
                 </Label>
-                <Select onValueChange={(value) => setValue("periodo_escolar", value)}>
+                <Select onValueChange={(value) => setValue("id_periodo_escolar", value)}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Selecciona el período" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="2024-2025">2024-2025</SelectItem>
-                    <SelectItem value="2025-2026">2025-2026</SelectItem>
-                    <SelectItem value="2026-2027">2026-2027</SelectItem>
+                    {periodos_escolares.map(({ nombre, id_periodo_escolar }) => <SelectItem key={`${id_periodo_escolar}`} value={String(id_periodo_escolar)} >{nombre}</SelectItem>)}
+
                   </SelectContent>
                 </Select>
-                {errors.periodo_escolar && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.periodo_escolar.message}</p>
+                {errors.id_periodo_escolar && (
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.id_periodo_escolar.message}</p>
                 )}
               </div>
 
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2 ">
                 <Label htmlFor="ano" className="font-medium">
                   Año Escolar
                 </Label>
-                <Select onValueChange={(value) => setValue("ano", value)}>
+                <Select onValueChange={(value) => setValue("id_ano", value)}>
                   <SelectTrigger className="">
                     <SelectValue placeholder="Selecciona el año escolar" />
                   </SelectTrigger>
                   <SelectContent>
-                     {anos.map(({id,nombre})=> <SelectItem  key={`año ${id}`} value={String(id)} >{nombre}</SelectItem> )}                  
+                    {anos.map(({ id, nombre }) => <SelectItem key={`año ${id}`} value={String(id)} >{nombre}</SelectItem>)}
                   </SelectContent>
                 </Select>
-                {errors.ano && <p className="text-sm text-red-600 dark:text-red-400">{errors.ano.message}</p>}
+                {errors.id_ano && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_ano.message}</p>}
+              </div>
+
+              <div className="space-y-2 ">
+                <Label htmlFor="id_tipo_evaluacion" className="font-medium">
+                  Tipo evaluacion
+                </Label>
+                <Select onValueChange={(value) => setValue("id_tipo_evaluacion", value)}>
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="Selecciona el año escolar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tiposEvaluaciones.map(({ id_tipo_evaluacion, nombre }) => <SelectItem key={`${id_tipo_evaluacion}`} value={String(id_tipo_evaluacion)} >{nombre}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                {errors.id_tipo_evaluacion && <p className="text-sm text-red-600 dark:text-red-400">{errors.id_tipo_evaluacion.message}</p>}
               </div>
             </div>
           </div>
+
+          {message && (
+            <div>{message} </div>
+          )}
+
 
           <div className="flex gap-3 pt-6">
             <Button
