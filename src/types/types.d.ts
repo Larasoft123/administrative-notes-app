@@ -1,14 +1,59 @@
 export interface User {
-    user_id: number;
-    email: string;
-    rol: "Docente" | "Admin";
-    created_at: Date;
-    hashed_password?: string;
+  user_id: number;
+  email: string;
+  rol: "Docente" | "Admin";
+  created_at: Date;
+  hashed_password?: string;
+}
+
+
+export interface TipoEvaluacion {
+  id_tipo_evaluacion: number;
+  nombre: string
+}
+
+export interface EvaluacionFormData {
+  nombre: string;
+  descripcion_evaluacion: string;
+  id_materia: number;
+  id_ano: number;
+  id_seccion: number;
+  id_periodo_escolar: number;
+  id_lapso: number;
+  id_tipo_evaluacion: number;
 }
 
 
 
+export interface Materia {
+  id_materia: number;
+  nombre_materia: string
+}
 
+
+export interface EvaluationCreateData {
+  id_lapso: number;
+  id_tipo_evaluacion: number;
+  nombre: string;
+  descripcion_evaluacion: string;
+  id_curso: number
+}
+
+export interface CurseFormData {
+  id_materia: number;
+  id_docente: number;
+  id_ano: number;
+  id_seccion: number;
+  id_periodo_escolar: number;
+}
+
+export interface PeriodoEscolar {
+  id_periodo_escolar: number
+  nombre: string,
+  fecha_inicio: Date,
+  fecha_fin: Date,
+  activo: boolean
+}
 
 export interface Student {
   id: string
@@ -20,8 +65,8 @@ export interface Student {
   detalle_materias: Grade[] | string
   promedio_general: number
   status: "activo" | "inactivo"
- 
- 
+
+
 }
 
 export interface Grade {
@@ -38,7 +83,7 @@ export interface StudentFilters {
   status?: string
   search?: string
   años?: AñoData[]
-  secciones? : SeccionData[]
+  secciones?: SeccionData[]
 }
 
 
@@ -54,6 +99,6 @@ export interface SeccionData {
 
 
 export interface LapsoData {
-    id: number;
-    nombre: string;
+  id: number;
+  nombre: string;
 }
