@@ -41,6 +41,8 @@ export async function getStudents() {
 
       }
     })
+   
+    
     return students;
   } catch (error) {
     console.log(error);
