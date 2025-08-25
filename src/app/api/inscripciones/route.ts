@@ -12,18 +12,12 @@ interface InscripcionFormData {
 export async function POST(req: NextRequest) {
   const { id_estudiante, id_ano, id_seccion, id_periodo_escolar } =
     (await req.json()) as InscripcionFormData;
+
   const session = await getSessionServer();
-  if (!session) {
+  if (!session || session.user.role !== "Admin") {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
-  const { user } = session;
-
-  if (user.role !== "Admin") {
-    return NextResponse.json(
-      { error: "No tienes permisos para crear cursos" },
-      { status: 401 }
-    );
-  }
+  
 
   try {
     const inscripcion = await Inscripciones.createInscripcion({
@@ -35,7 +29,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(inscripcion);
   } catch (error) {
     return NextResponse.json(
-      { error: "Error al crear el curso" },
+      { error: "Error al inscribir al estudiante" },
       { status: 500 }
     );
   }
@@ -58,7 +52,7 @@ class Inscripciones {
         return inscripcion;    
     } catch (error) {
         console.log(error);
-        throw new Error("Error al crear el curso");
+        throw new Error("Error al inscribir al estudiante");
     }
 
 
