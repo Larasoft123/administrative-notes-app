@@ -11,7 +11,7 @@ export async function getStudentsWithInfo({
 
   try {
     const reponse = await fetch(
-      `http://localhost:3000/api/estudiantes?status=${status}&year=${year}&section=${section}&search=${search}`
+      `http://localhost:3000/api/estudiantes?status=${status}&info=true&year=${year}&section=${section}&search=${search}`
     );
     const students = (await reponse.json()) as Student[];
   
@@ -27,6 +27,26 @@ export async function getStudentsWithInfo({
 }
 
 
+
+
+export async function getStudents() {
+  try {
+    const reponse = await fetch(`http://localhost:3000/api/estudiantes`);
+    const data = (await reponse.json())
+
+    const students = data.map((student: any)=> {
+      return {
+        id_estudiante: student.id_estudiante,
+        nombre_completo: `${student.nombres} ${student.apellidos}`,
+
+      }
+    })
+    return students;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
 
 export async function getStudentsPageData({id}: {id:number}) {
 
