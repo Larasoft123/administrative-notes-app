@@ -7,6 +7,17 @@ export interface User {
 }
 
 
+interface Evaluation {
+  id_evaluacion: number
+  nombre_evaluacion: string
+  descripcion_evaluacion: string
+  nombre_ano : string
+  nombre_seccion : string
+  tipo_evaluacion : string
+  finished: boolean
+
+}
+
 export interface TipoEvaluacion {
   id_tipo_evaluacion: number;
   nombre: string
