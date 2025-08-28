@@ -1,7 +1,8 @@
-import { StudentCard } from "./student-card"
+import { StudentCard } from "@/components/students/student-card"
 import type { Student } from "@/types/types.d"
 import { StudentFilters } from "@/types/types.d"
 import { getStudentsWithInfo } from "@/lib/api/students"
+import Grid from "@/components/ui/grid"
 
 
 export async function StudentsGrid({ searchParams }: { searchParams: StudentFilters }) {
@@ -60,13 +61,13 @@ export async function StudentsGrid({ searchParams }: { searchParams: StudentFilt
   }
 
   return (
-    <div className="grid gap-4 sm:gap-6 grid-cols-1 p-4 lg:grid-cols-2 xl:grid-cols-3">
+    <Grid>
       {procesedStrudents.map((student) => (
         <StudentCard
           key={student.id}
           student={student}
         />
       ))}
-    </div>
+    </Grid>
   )
 }
