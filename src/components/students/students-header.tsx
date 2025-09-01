@@ -3,9 +3,9 @@ import { UserPlus, Download, Upload } from 'lucide-react'
 import Link from "next/link"
 
 
-export function StudentsHeader({  }) {
+export function StudentsHeader({ }) {
   return (
-    <div className="flex sm:flex-row flex-col gap-y-4  items-center sm:justify-between">
+    <header className="flex sm:flex-row flex-col gap-y-4  items-center sm:justify-between">
       <div>
         <h1 className="text-3xl text-center text-balance sm:text-start font-bold text-gray-900 dark:text-white">Estudiantes</h1>
         <p className="text-gray-600 text-center text-balance sm:text-start dark:text-gray-400 mt-1">
@@ -22,12 +22,12 @@ export function StudentsHeader({  }) {
           Exportar
         </Button>
         <Link href="/estudiantes/create">
-        <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Nuevo Estudiante
-        </Button>
+          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Nuevo Estudiante
+          </Button>
         </Link>
       </div>
-    </div>
+    </header>
   )
 }
