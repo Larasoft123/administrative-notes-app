@@ -35,6 +35,16 @@ export interface EvaluacionFormData {
 }
 
 
+export interface StudentFormData {
+  cedula?: string | null;
+  nombre: string;
+  apellido: string;
+  fecha_nacimiento: Date;
+  direccion?: string | null;
+  inscribirlo: boolean;
+  ano?: number;
+  seccion?: number;
+}
 
 export interface Materia {
   id_materia: number;
@@ -58,6 +68,14 @@ export interface CurseFormData {
   id_periodo_escolar: number;
 }
 
+interface studentFilters {
+  page?: number
+  name: string;
+  año: string;
+  seccion: string;
+  periodos_escolares: string;
+  status: statusOptions;
+}
 export interface PeriodoEscolar {
   id_periodo_escolar: number
   nombre: string,
@@ -65,6 +83,15 @@ export interface PeriodoEscolar {
   fecha_fin: Date,
   activo: boolean
 }
+
+export interface PeriodoEscolarFormData {
+    nombre: string,
+  fecha_inicio: Date,
+  fecha_fin: Date,
+  activo: boolean
+  
+}
+
 
 export interface Student {
   id: string
@@ -85,7 +112,6 @@ export interface Grade {
   average: number,
   notes: number[]
   date?: string
-  type?: "exam" | "homework" | "project" | "quiz"
 }
 
 export interface StudentFilters {
@@ -93,6 +119,8 @@ export interface StudentFilters {
   section?: string
   status?: string
   search?: string
+  periodos_escolares?: PeriodoEscolar[]
+  page: number
   años?: AñoData[]
   secciones?: SeccionData[]
 }
