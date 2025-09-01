@@ -7,20 +7,27 @@ export async function getStudentsWithInfo({
   section,
   status,
   year,
-}: StudentFilters) {
+  page
+
+}: StudentFilters): Promise<{ students: Student[], totalPages: number }> {
 
   try {
     const reponse = await fetch(
-      `http://localhost:3000/api/estudiantes?status=${status}&info=true&year=${year}&section=${section}&search=${search}`
+      `http://localhost:3000/api/estudiantes?status=${status}&info=true&page=${page}&year=${year}&section=${section}&search=${search}`
     );
-    const students = (await reponse.json()) as Student[];
+
+    
+    const result = (await reponse.json())
+    const students = result.students as Student[];
+    const totalPages = result.totalPages as number;
+    
   
-    return students;
+    return {students,totalPages };
     
   } catch (error) {
     console.log(error );
     
-    return [];
+    return {students:[],totalPages:0};
     
   }
 
