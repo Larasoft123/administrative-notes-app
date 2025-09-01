@@ -6,6 +6,7 @@ import { getStudentsPageData } from "@/lib/api/students"
 import { StudentFilters } from "@/types/types.d"
 import { Suspense } from "react"
 import { getSessionServer } from "@/utils/session"
+import { getPeriodos } from "@/lib/api/periodos-escolares"
 
 
 
@@ -18,7 +19,9 @@ export async function StudentsPage({ searchParams }: { searchParams: StudentFilt
     return <div>No se ha iniciado sesión</div>
   }
 
-  const [years, sections] = await getStudentsPageData({id:session.user.id})
+  const [years, sections] = await getStudentsPageData({ id: session.user.id })
+  const periodosEscolares = await getPeriodos()
+
 
 
 
@@ -35,12 +38,14 @@ export async function StudentsPage({ searchParams }: { searchParams: StudentFilt
 
 
   return (
-    <div className="space-y-6">
+    <section className="space-y-6">
       <StudentsHeader />
 
       <StudentsFilters
+        page={searchParams.page}
         años={years}
         secciones={sections}
+        periodos_escolares={periodosEscolares}
       />
 
 
@@ -52,6 +57,6 @@ export async function StudentsPage({ searchParams }: { searchParams: StudentFilt
         />
       </Suspense>
 
-    </div>
+    </section>
   )
 }
