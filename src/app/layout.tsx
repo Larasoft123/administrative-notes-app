@@ -1,17 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
+import { unstable_ViewTransition as ViewTransition } from 'react'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+
 
 export const metadata: Metadata = {
   title: "Notas app",
@@ -36,7 +30,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            {children}
+            <ViewTransition>
+              {children}
+            </ViewTransition>
           </div>
         </ThemeProvider>
 
