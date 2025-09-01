@@ -1,6 +1,6 @@
 "use client"
 import { Input } from "@/components/ui/input"
-import {useDebouncedCallback} from "use-debounce"
+import { useDebouncedCallback } from "use-debounce"
 import {
   Select,
   SelectContent,
@@ -17,7 +17,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 
 
 
-export function StudentsFilters({ años, secciones }: StudentFilters) {
+export function StudentsFilters({ años, secciones, periodos_escolares }: StudentFilters) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -41,14 +41,14 @@ export function StudentsFilters({ años, secciones }: StudentFilters) {
   const handleChange = useDebouncedCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const params = new URLSearchParams(searchParams);
     const { value } = e.target;
-    console.log(value );
+
     if (value) {
       params.set('search', value)
     } else {
       params.delete('search')
     }
     router.replace(`${pathname}?${params.toString()}`);
-  },500);
+  }, 500);
 
 
 
@@ -104,7 +104,7 @@ export function StudentsFilters({ años, secciones }: StudentFilters) {
           </Select>
 
           <Select
-            defaultValue={searchParams.get("status")?.toString() || "activo"}
+            defaultValue={searchParams.get("status")?.toString() ?? "todos"}
             onValueChange={(value) => handleSelectChange({ name: "status", value })}
           >
             <SelectTrigger className="text-xs justify-self-center sm:text-sm sm:w-32">
@@ -116,7 +116,30 @@ export function StudentsFilters({ años, secciones }: StudentFilters) {
               <SelectItem value="inactivo">Inactivos</SelectItem>
             </SelectContent>
           </Select>
+
+
+          <Select
+            defaultValue={
+              searchParams.get("periodo_escolar")?.toString() ?? "todos"
+
+            }
+            onValueChange={(value) => handleSelectChange({ name: "periodo_escolar", value })}
+          >
+            <SelectTrigger className="text-xs justify-self-center sm:text-sm sm:w-32">
+              <SelectValue placeholder="periodo escolar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="todos">todos</SelectItem>
+              {periodos_escolares?.map(
+                ({ id_periodo_escolar, activo, nombre }) => <SelectItem
+                  className={`${activo.valueOf() ? 'bg-green-600/75' : 'bg-red-400/75'}`} key={id_periodo_escolar} value={nombre} >{nombre}</SelectItem>)}
+            </SelectContent>
+          </Select>
+
         </div>
+
+
+
       </div>
 
       {/* Active Filters and Results */}
