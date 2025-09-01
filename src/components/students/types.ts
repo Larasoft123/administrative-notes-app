@@ -5,7 +5,7 @@ export interface Student {
   avatar?: string
   ano: string
   seccion: string
-  detalle_materias: Grade[] | string
+  detalle_materias: Grade[]
   promedio_general: number
   status: "activo" | "inactivo"
  
@@ -17,10 +17,11 @@ export interface Grade {
   average: number,
   notes: number[]
   date?: string
-  type?: "exam" | "homework" | "project" | "quiz"
+  type?: string
 }
 
 export interface StudentFilters {
+  page: number
   year?: string
   section?: string
   status?: string
