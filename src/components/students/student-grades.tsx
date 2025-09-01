@@ -36,15 +36,15 @@ export function StudentGrades({ grades, average }: StudentGradesProps) {
       <CardContent>
         <div className="space-y-3">
           {grades.slice(0, 4).map((grade, index) => (
-            <div key={grade.subject} className="flex  items-start justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
+            <div key={index} className="flex  items-start justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
               <div className="flex-1">
-                <p className="font-medium text-sm">{grade.subject} </p>
+                <p className="font-medium text-sm">{grade.subject ?? "Sin asignatura"}  </p>
                 {/* <p className="text-xs text-gray-500 dark:text-gray-400">{grade.average}</p> */}
               </div>
 
 
               <div className="flex flex-wrap justify-end gap-4">
-                {grade.notes.map((note,index) => <GradeBadge key={index} score={note} maxScore={20} />)}
+                {grade.notes.map((note, index) => <GradeBadge key={index} score={note} maxScore={20} />)}
               </div>
             </div>
           ))}
