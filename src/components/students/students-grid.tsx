@@ -3,19 +3,27 @@ import type { Student } from "@/types/types.d"
 import { StudentFilters } from "@/types/types.d"
 import { getStudentsWithInfo } from "@/lib/api/students"
 import Grid from "@/components/ui/grid"
+import { Pagination } from "@/components/students/pagination"
 
 
 export async function StudentsGrid({ searchParams }: { searchParams: StudentFilters }) {
-  const { search = '', section = "todos", status = "activo", year = "todos" } = searchParams
-  const students: Student[] = await getStudentsWithInfo({ search, section, status, year })
+  const { search = '', section = "todos", page = 1, status = "todos", year = "todos" } = searchParams
+  const { totalPages, students } = await getStudentsWithInfo({ search, section, status, year, page })
+
+
+
   const procesedStrudents = students.map((student) => {
     return {
       ...student,
       detalle_materias: (student.detalle_materias as String).split(" | ").map((grade: any) => {
         const [subject, average, notes,] = grade.split(", ");
         const subjectValue = subject.split(": ")[1];
-        const averageValue = average.split(": ")[1];
-        const notesValue = notes.split(": ")[1];
+
+
+
+
+        const averageValue = (average?.split(": ")[1] ?? "");
+        const notesValue = (notes?.split(": ")[1] ?? "[]");
 
 
 
@@ -61,13 +69,16 @@ export async function StudentsGrid({ searchParams }: { searchParams: StudentFilt
   }
 
   return (
-    <Grid>
-      {procesedStrudents.map((student) => (
-        <StudentCard
-          key={student.id}
-          student={student}
-        />
-      ))}
-    </Grid>
+    <>
+      <Grid>
+        {procesedStrudents.map((student) => (
+          <StudentCard
+            key={student.id}
+            student={student}
+          />
+        ))}
+      </Grid>
+      <Pagination totalPages={totalPages} currentPage={page} />
+    </>
   )
 }
