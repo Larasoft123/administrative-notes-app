@@ -38,22 +38,25 @@ export function StudentCard({ student, onViewDetails }: StudentCardProps) {
               </div>
             </div>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => onViewDetails?.(student)}
             className="ml-2 shrink-0"
           >
             <Eye className="h-4 w-4" />
-         
+
           </Button>
         </div>
       </CardHeader>
       <CardContent className="space-y-3 sm:space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-          
+
         </div>
-        <StudentGrades grades={student.detalle_materias} average={+student.promedio_general} />
+        <StudentGrades
+          grades={Array.isArray(student.detalle_materias) ? student.detalle_materias : []}
+          average={+student.promedio_general}
+        />
       </CardContent>
     </Card>
   )
