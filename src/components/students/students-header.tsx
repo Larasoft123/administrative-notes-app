@@ -21,6 +21,12 @@ export function StudentsHeader({ }) {
           <Download className="mr-2 h-4 w-4" />
           Exportar
         </Button>
+        <Link href="/inscripciones/inscribe">
+          <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Inscribir un estudiante
+          </Button>
+        </Link>
         <Link href="/estudiantes/create">
           <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700" >
             <UserPlus className="mr-2 h-4 w-4" />
