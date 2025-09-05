@@ -28,7 +28,7 @@ const evaluationSchema = z.object({
 
 type EvaluationFormData = z.infer<typeof evaluationSchema>
 
-export function EvaluationForm({ anos, secciones, periodos, students }: { students: any[], anos: AñoData[], secciones: SeccionData[], periodos: PeriodoEscolar[] }) {
+export function InscribeStudentForm({ anos, secciones, periodos, students }: { students: any[], anos: AñoData[], secciones: SeccionData[], periodos: PeriodoEscolar[] }) {
     const {
         handleSubmit,
         setValue,
@@ -49,7 +49,7 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
     const onSubmit = async (data: EvaluationFormData) => {
         const newData = convertObjectDataToNumber(data)
 
-        console.log(newData);
+
 
 
 
@@ -83,7 +83,7 @@ export function EvaluationForm({ anos, secciones, periodos, students }: { studen
     }
 
     return (
-        <Card className="shadow-xl border-0 backdrop-blur-sm  dark:backdrop-blur-sm">
+        <Card className="shadow-xl border-0 backdrop-blur-sm dark:backdrop-blur-sm">
             <CardHeader className="space-y-1 pb-6">
                 <div className="flex items-center gap-2">
                     <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
