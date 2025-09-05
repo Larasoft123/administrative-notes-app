@@ -1,23 +1,24 @@
 import { PerformanceCharts } from "@/components/dashboard/performance-charts"
 
-import {getSessionServer} from "@/utils/session"
+import { getSessionServer } from "@/utils/session"
 
 
-async function getSectionsPerformance({userId,role}: {userId:number,role:string}): Promise<Error | any[]> {
+async function getSectionsPerformance({ userId, role }: { userId: number, role: string }): Promise<Error | any[]> {
     const res = await fetch(`http://localhost:3000/api/secciones?performance=true&userId=${userId}&role=${role}`, {
         credentials: "include"
     })
 
-    
-    
+
+
     if (!res.ok) {
         return new Error('Failed to fetch data')
     }
-    const json = await res.json()
+    const json = (await res.json()) as any[]
 
 
-    return json
-    
+
+    return json.sort((a, b) => a.section.localeCompare(b.section))
+
 }
 
 
@@ -26,19 +27,20 @@ export async function ChartsContainer() {
     if (!session) {
         return <div>No se ha iniciado sesión</div>
     }
-    const {user} = session
-   
-    
+    const { user } = session
 
-    const sectionsPerformance = await getSectionsPerformance({role:user.role,userId:user.id})
+
+
+    const sectionsPerformance = await getSectionsPerformance({ role: user.role, userId: user.id })
+    console.log({ sectionsPerformance });
 
     if (sectionsPerformance instanceof Error) {
         return <div>Error al obtener los datos</div>
     }
- 
 
 
-  return (
-    <PerformanceCharts sectionsPerformance={sectionsPerformance}/>
-  )
+
+    return (
+        <PerformanceCharts sectionsPerformance={sectionsPerformance} />
+    )
 }
