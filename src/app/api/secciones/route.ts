@@ -114,6 +114,7 @@ class Secciones {
 
   static async getSectionsPerformanceFromAdmin() {
     const query = `SELECT
+    a.id_ano || '' || s.id_seccion AS id,
     a.nombre_ano || ' ' || s.nombre_seccion AS section, 
      COALESCE(ROUND(AVG(n.calificacion), 2),0) AS promedio,
     COUNT(DISTINCT e.id_estudiante) AS estudiantes
@@ -132,11 +133,11 @@ LEFT JOIN
 WHERE
     pe.activo = TRUE 
 GROUP BY
-    a.nombre_ano,
-    s.nombre_seccion
+    a.id_ano,
+    s.id_seccion
 ORDER BY
-    a.nombre_ano,
-    s.nombre_seccion;
+    a.id_ano,
+    s.id_seccion;
 `;
 
     try {
