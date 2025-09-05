@@ -121,7 +121,7 @@ OFFSET $7;
   }
 
   static async getStudents() {
-    const students = await sql.query("SELECT * FROM estudiantes ORDER BY apellidos, nombres");
+    const students = await sql.query("SELECT * FROM estudiantes ORDER BY nombres, apellidos");
     return students;
   }
 
