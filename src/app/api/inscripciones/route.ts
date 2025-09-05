@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sql } from "@/lib/db";
 import { getSessionServer } from "@/utils/session";
+import { checkIsAdmin } from "@/middleware/auth-middleware";
 
 interface InscripcionFormData {
   id_estudiante: number;
@@ -14,11 +15,12 @@ export async function POST(req: NextRequest) {
     (await req.json()) as InscripcionFormData;
     console.log( {id_estudiante, id_ano, id_seccion, id_periodo_escolar});
     
-
-  const session = await getSessionServer();
-  if (!session || session.user.role !== "Admin") {
-    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  const authResult = await checkIsAdmin(req)
+  if (!authResult.ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  
   }
+
   
 
   try {

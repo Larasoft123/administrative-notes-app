@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionServer } from "@/utils/session";
 import { EvaluacionFormData } from "@/types/types.d";
 import { Evaluaciones } from "@/models/evaluaciones";
+import { checkIsAdmin } from "@/middleware/auth-middleware";
 import { Cursos } from "@/models/cursos";
 
 export async function GET(req: NextRequest) {
@@ -39,11 +40,11 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getSessionServer();
-  if (!session || session.user.role !== "Admin") {
-    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  const authResult = await checkIsAdmin(req)
+  if (!authResult.ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 }); 
   }
-
+ 
   const {
     descripcion_evaluacion,
     id_lapso,

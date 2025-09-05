@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { Student,StudentFormData } from "@/types/types.d";
 import { getSessionServer } from "@/utils/session";
-
+import { checkIsAdmin } from "@/middleware/auth-middleware";
 import { Students } from "@/models/estudiantes";
 
 
@@ -51,10 +51,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getSessionServer();
-  if (!session || session.user.role !== "Admin") {
-    return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
+  const authResult = await checkIsAdmin(request);
+  if (!authResult.ok) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
   let {
     apellido,
     fecha_nacimiento,
