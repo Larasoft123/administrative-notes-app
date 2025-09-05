@@ -23,6 +23,12 @@ export interface TipoEvaluacion {
   nombre: string
 }
 
+export interface Docente {
+  id_docente: number
+  nombres: string
+  apellidos: string
+}
+
 export interface EvaluacionFormData {
   nombre: string;
   descripcion_evaluacion: string;
