@@ -1,17 +1,16 @@
+import { CursosPage } from "@/components/cursos/cursos-page"
 
 
-const getData = () => {
-    
-}
 
 
-export default async function CursosPage() {
+export default async function Page() {
 
 
 
 
   return (
     <div>
+      <CursosPage />
 
 
 
