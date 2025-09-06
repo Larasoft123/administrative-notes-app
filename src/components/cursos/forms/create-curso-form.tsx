@@ -9,6 +9,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Docente } from "@/types/types.d"
+import { toast } from "sonner"
 
 
 
@@ -58,10 +59,16 @@ export function CreateCurseForm({
             body: JSON.stringify(data)
         })
         if (!res.ok) {
+            toast.error("Error al crear el curso", {
+                richColors: true,
+                duration: 5000
+            })
             throw new Error("Error al crear el curso")
         }
-        const json = await res.json()
-        console.log(json);
+        toast.success("curso creado correctamente", {
+            richColors: true,
+            duration: 5000
+        })
         form.reset()
 
 

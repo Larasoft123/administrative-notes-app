@@ -10,6 +10,7 @@ import { Loader2, Calendar, GraduationCap } from "lucide-react"
 import { AñoData, SeccionData, PeriodoEscolar } from "@/types/types.d"
 import { useState } from "react"
 import { convertObjectDataToNumber } from "@/utils/convert"
+import { toast } from "sonner"
 
 
 const evaluationSchema = z.object({
@@ -42,7 +43,7 @@ export function InscribeStudentForm({ anos, secciones, periodos, students }: { s
         },
     })
 
-    const [message, setMessage] = useState<string | null>(null)
+
 
 
 
@@ -60,13 +61,20 @@ export function InscribeStudentForm({ anos, secciones, periodos, students }: { s
                 body: JSON.stringify(newData)
             })
             if (!res.ok) {
+                toast.error("Error al inscribir al estudiante", {
+                    richColors: true,
+                    duration: 5000
+                })
                 throw new Error("Error al inscribir al estudiante")
-                setMessage("Error al inscribir al estudiante")
+
             }
 
             const json = await res.json()
             if (Array.isArray(json)) {
-                setMessage("Estudiante inscrito correctamente")
+                toast.success("Estudiante inscrito correctamente", {
+                    richColors: true,
+                    duration: 5000
+                })
             }
 
 
@@ -74,9 +82,9 @@ export function InscribeStudentForm({ anos, secciones, periodos, students }: { s
 
 
 
-            reset()
+
         } catch (error) {
-            setMessage("Error al inscribir al estudiante")
+            toast.error("Error al inscribir al estudiante")
             console.log(error);
 
         }
@@ -176,9 +184,7 @@ export function InscribeStudentForm({ anos, secciones, periodos, students }: { s
                         </div>
 
 
-                        {message && <div className=" w-full flex justify-center ">
-                            <span className="text-sm ">{message}</span>
-                        </div>}
+
 
                     </div>
 

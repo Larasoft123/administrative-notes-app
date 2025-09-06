@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+
 import { Loader2, BookOpen, Calendar, GraduationCap } from "lucide-react"
 import { AñoData, SeccionData, Materia, LapsoData, PeriodoEscolar, TipoEvaluacion } from "@/types/types.d"
 import { convertObjectDataToNumber } from "@/utils/convert"
+import { toast } from "sonner"
 
 const evaluationSchema = z.object({
   nombre: z.string().min(3, "El nombre debe tener al menos 3 caracteres"),
@@ -58,7 +59,6 @@ export function EvaluationForm({ tiposEvaluaciones, anos, secciones, periodos_es
     },
   })
 
-  const [message, setMessage] = useState<string | null>(null);
 
 
 
@@ -76,7 +76,10 @@ export function EvaluationForm({ tiposEvaluaciones, anos, secciones, periodos_es
 
       if (!res.ok) {
         const errorJson = await res.json();
-        setMessage(errorJson.error);
+        toast.error(errorJson.error, {
+          richColors: true,
+          duration: 5000
+        })
       }
       const json = await res.json()
 
@@ -159,7 +162,7 @@ export function EvaluationForm({ tiposEvaluaciones, anos, secciones, periodos_es
               <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">Configuración Académica</h3>
             </div>
 
-            <div className="grid grid-cols-1  md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 justify-center items-center  md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="lapso" className="font-medium">
                   Lapso
@@ -258,9 +261,6 @@ export function EvaluationForm({ tiposEvaluaciones, anos, secciones, periodos_es
             </div>
           </div>
 
-          {message && (
-            <div>{message} </div>
-          )}
 
 
           <div className="flex gap-3 pt-6">

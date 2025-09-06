@@ -22,6 +22,7 @@ import {
 import { Form, FormField, FormControl, FormLabel, FormDescription, FormItem, FormMessage } from "@/components/ui/form"
 import { Checkbox } from "@/components/ui/checkbox"
 import { AñoData, SeccionData } from "@/types/types.d"
+import { toast } from "sonner"
 
 interface StudentFormData {
     cedula: string | undefined
@@ -43,7 +44,7 @@ export function CreateStudentForm({ anos, secciones }: { anos: AñoData[], secci
             fecha_nacimiento: undefined,
             direccion: '',
             inscribirlo: false,
-     
+
         },
     })
 
@@ -66,8 +67,8 @@ export function CreateStudentForm({ anos, secciones }: { anos: AñoData[], secci
     const handleFormSubmit = async (data: StudentFormData) => {
 
         if (data.inscribirlo) {
-            data.ano= Number(data.ano)
-            data.seccion = Number(data.seccion)      
+            data.ano = Number(data.ano)
+            data.seccion = Number(data.seccion)
         }
 
         const res = await fetch("/api/estudiantes", {
@@ -77,9 +78,30 @@ export function CreateStudentForm({ anos, secciones }: { anos: AñoData[], secci
             },
             body: JSON.stringify(data)
         })
+        if (!res.ok) {
+            toast.error("Error al crear el estudiante", {
+                richColors: true,
+                duration: 5000
+            })
+            throw new Error("Error al crear el estudiante")
+        }
 
         const json = await res.json()
-        console.log({ res, json });
+
+
+        if (json.inscripcion) {
+            toast.success("Estudiante creado e inscrito correctamente", {
+                richColors: true,
+                duration: 5000
+            })
+            return
+        }
+        toast.success("Estudiante creado  correctamente", {
+            richColors: true,
+            duration: 5000
+        })
+
+
 
 
     }
@@ -407,8 +429,8 @@ export function CreateStudentForm({ anos, secciones }: { anos: AñoData[], secci
                                                                 </SelectTrigger>
                                                                 <SelectContent>
                                                                     {anos.map(({ id, nombre }) => (
-                                                                        <SelectItem key={id} 
-                                                                        value={id.toString()}
+                                                                        <SelectItem key={id}
+                                                                            value={id.toString()}
                                                                         >
                                                                             {nombre}
                                                                         </SelectItem>
@@ -452,7 +474,7 @@ export function CreateStudentForm({ anos, secciones }: { anos: AñoData[], secci
                                                                     <SelectValue placeholder="Año" />
                                                                 </SelectTrigger>
                                                                 <SelectContent>
-                                                                    {secciones.map(({id,nombre}) => (
+                                                                    {secciones.map(({ id, nombre }) => (
                                                                         <SelectItem key={id} value={id.toString()}>
                                                                             {nombre}
                                                                         </SelectItem>
