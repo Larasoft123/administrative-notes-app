@@ -6,11 +6,8 @@ import { getPeriodos } from "@/lib/api/periodos-escolares"
 
 
 export default async function InscribePage() {
-  const anos = await getYears();
-  const sections = await getSections({ id: 10 })
-  const students = await getStudents()
-  const periodos = await getPeriodos()
 
+  const [anos, sections, students, periodos] = await Promise.all([getYears(), getSections({ id: 10 }), getStudents(), getPeriodos()])
 
 
 
