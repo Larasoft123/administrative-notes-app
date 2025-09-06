@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { ThemeProvider } from "@/providers/theme-provider";
 import "./globals.css";
-import { unstable_ViewTransition as ViewTransition } from 'react'
-
+// import { unstable_ViewTransition as ViewTransition } from 'react'
+import { Toaster } from "@/components/ui/sonner";
 
 
 
@@ -30,9 +30,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <ViewTransition>
-              {children}
-            </ViewTransition>
+            {/* <ViewTransition> */}
+            {children}
+            {/* </ViewTransition> */}
+            <Toaster />
           </div>
         </ThemeProvider>
 
