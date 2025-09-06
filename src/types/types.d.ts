@@ -147,3 +147,26 @@ export interface LapsoData {
   id: number;
   nombre: string;
 }
+
+export interface Curso {
+    id_curso: string
+    nombre_ano: string
+    nombre_materia: number
+    nombre_periodo: string
+    nombre_seccion: string
+}
+
+export interface Teacher {
+    id_docente: number
+    cedula: string
+    nombres: string
+    apellidos: string
+    telefono: string
+    email: string
+    materias_impartidas: Materia[]
+    cursos: Curso[]
+    periodos_escolares_impartidos: string[]
+    anos_impartidos: string[]
+    secciones_impartidas: string[]
+    numero_estudiantes_a_cargo: number
+}
