@@ -19,7 +19,7 @@ export function Pagination({ totalPages = 1, currentPage = 1 }: { totalPages: nu
         <footer className="p-4 flex items-center w-full">
             <div className="w-full flex justify-between items-center">
                 <div className="flex items-center">
-                    <Button onClick={handleChangePage(currentPage - 1)} className='cursor-pointer' variant={"outline"}>
+                    <Button disabled={currentPage <= 1} onClick={handleChangePage(currentPage - 1)} className='cursor-pointer' variant={"outline"}>
                         <ChevronLeft />
                     </Button>
                 </div>
@@ -31,7 +31,7 @@ export function Pagination({ totalPages = 1, currentPage = 1 }: { totalPages: nu
                 </div>
 
                 <div className="flex items-center">
-                    <Button onClick={handleChangePage(currentPage + 1)} className='cursor-pointer' variant={"outline"}>
+                    <Button disabled={currentPage == totalPages} onClick={handleChangePage(currentPage + 1)} className='cursor-pointer' variant={"outline"}>
                         <ChevronRight />
                     </Button>
                 </div>
