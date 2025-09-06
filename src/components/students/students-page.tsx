@@ -7,6 +7,7 @@ import { StudentFilters } from "@/types/types.d"
 import { Suspense } from "react"
 import { getSessionServer } from "@/utils/session"
 import { getPeriodos } from "@/lib/api/periodos-escolares"
+import { StudentCardSkeleton } from "./student-card-skeleton"
 
 
 
@@ -51,7 +52,7 @@ export async function StudentsPage({ searchParams }: { searchParams: StudentFilt
 
 
 
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense key={`${searchParams.page} ${searchParams.search}`} fallback={<StudentCardSkeleton />}>
         <StudentsGrid
           searchParams={searchParams}
         />
