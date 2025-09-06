@@ -162,8 +162,6 @@ OFFSET $7;
       )[0].id_periodo_escolar
     );
 
-    console.log(id_periodo_escolar);
-    console.log(typeof id_periodo_escolar);
 
     const query = `INSERT INTO 
     inscripciones (id_estudiante,id_ano,id_seccion,id_periodo_escolar)  
