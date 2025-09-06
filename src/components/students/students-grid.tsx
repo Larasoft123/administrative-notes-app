@@ -1,9 +1,8 @@
 import { StudentCard } from "@/components/students/student-card"
-import type { Student } from "@/types/types.d"
 import { StudentFilters } from "@/types/types.d"
 import { getStudentsWithInfo } from "@/lib/api/students"
 import Grid from "@/components/ui/grid"
-import { Pagination } from "@/components/students/pagination"
+import { Pagination } from "@/components/ui/pagination"
 
 
 export async function StudentsGrid({ searchParams }: { searchParams: StudentFilters }) {
