@@ -1,6 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { Student,StudentFormData } from "@/types/types.d";
-import { getSessionServer } from "@/utils/session";
 import { checkIsAdmin } from "@/middleware/auth-middleware";
 import { Students } from "@/models/estudiantes";
 
